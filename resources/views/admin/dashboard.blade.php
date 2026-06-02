@@ -184,11 +184,11 @@
 
     <div class="row g-4 mb-5">
         
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-2 col-md-4">
             <div class="admin-stat-card h-100 p-2">
                 <div class="card-body p-4 d-flex align-items-center justify-content-between">
                     <div>
-                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Total Profiles</p>
+                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Profiles</p>
                         <h3 class="font-serif fw-bold mb-0 text-dark" style="font-size: 2rem;">{{ $stats['total_profiles'] ?? 0 }}</h3>
                     </div>
                     <div class="icon-box">
@@ -198,11 +198,11 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-2 col-md-4">
             <div class="admin-stat-card h-100 p-2">
                 <div class="card-body p-4 d-flex align-items-center justify-content-between">
                     <div>
-                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Registered Users</p>
+                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Users</p>
                         <h3 class="font-serif fw-bold mb-0 text-dark" style="font-size: 2rem;">{{ $stats['total_users'] ?? 0 }}</h3>
                     </div>
                     <div class="icon-box">
@@ -212,7 +212,7 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-2 col-md-4">
             <div class="admin-stat-card h-100 p-2">
                 <div class="card-body p-4 d-flex align-items-center justify-content-between">
                     <div>
@@ -226,52 +226,109 @@
             </div>
         </div>
 
+        <div class="col-xl-2 col-md-4">
+            <div class="admin-stat-card h-100 p-2">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Update Today</p>
+                        <h3 class="font-serif fw-bold mb-0 text-dark" style="font-size: 2rem;">{{ $stats['updated_profiles_today'] ?? 0 }}</h3>
+                    </div>
+                    <div class="icon-box">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4">
+            <div class="admin-stat-card h-100 p-2">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">This Month</p>
+                        <h3 class="font-serif fw-bold mb-0 text-dark" style="font-size: 2rem;">{{ $stats['new_profiles_this_month'] ?? 0 }}</h3>
+                    </div>
+                    <div class="icon-box">
+                        <i class="bi bi-calendar-month"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4">
+            <div class="admin-stat-card h-100 p-2">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Pending</p>
+                        <h3 class="font-serif fw-bold mb-0 text-dark" style="font-size: 2rem;">{{ $stats['pending_profiles'] ?? 0 }}</h3>
+                    </div>
+                    <div class="icon-box">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-xl-3 col-md-6">
             <div class="admin-stat-card h-100 p-2">
                 <div class="card-body p-4 d-flex align-items-center justify-content-between">
                     <div>
-                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Active Roles</p>
-                        <h3 class="font-serif fw-bold mb-0 text-dark" style="font-size: 2rem;">{{ $stats['active_roles'] ?? 0 }}</h3>
+                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Free Profiles</p>
+                        <h3 class="font-serif fw-bold mb-0 text-dark" style="font-size: 2rem;">{{ $stats['free_profiles'] ?? 0 }}</h3>   
                     </div>
                     <div class="icon-box">
-                        <i class="bi bi-shield-check"></i>
+                        <i class="bi bi-emoji-smile"></i>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="admin-stat-card h-100 p-2">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Basic Profiles</p>
+                        <h3 class="font-serif fw-bold mb-0 text-dark" style="font-size: 2rem;">{{ $stats['basic_profiles'] ?? 0 }}</h3>   
+                    </div>
+                    <div class="icon-box">
+                        <i class="bi bi-asterisk"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="admin-stat-card h-100 p-2">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Premium Profiles</p>
+                        <h3 class="font-serif fw-bold mb-0 text-dark" style="font-size: 2rem;">{{ $stats['premium_profiles'] ?? 0 }}</h3>   
+                    </div>
+                    <div class="icon-box">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+            <div class="admin-stat-card h-100 p-2">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">VIP Profiles</p>
+                        <h3 class="font-serif fw-bold mb-0 text-dark" style="font-size: 2rem;">{{ $stats['vip_profiles'] ?? 0 }}</h3>   
+                    </div>
+                    <div class="icon-box">
+                        <i class="bi bi-shield-fill-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="row g-4">
-        
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white" style="border-radius: 24px !important;">
-                <div class="card-header bg-transparent border-bottom-0 pt-4 pb-0 px-4">
-                    <h5 class="font-serif fw-bold m-0 text-gradient">Quick Actions</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="d-flex flex-column gap-3">
-                        <a href="{{ route('admin.profiles.index') }}" class="action-pill">
-                            <i class="bi bi-person-plus-fill"></i>
-                            <span>Review New Profiles</span>
-                        </a>
-                        <a href="{{ route('admin.users.index') }}" class="action-pill">
-                            <i class="bi bi-person-gear"></i>
-                            <span>Manage User Access</span>
-                        </a>
-                        <a href="{{ route('admin.areas.index') }}" class="action-pill">
-                            <i class="bi bi-geo-alt-fill"></i>
-                            <span>Update Area Masters</span>
-                        </a>
-                        <a href="{{ route('admin.educations.index') }}" class="action-pill">
-                            <i class="bi bi-mortarboard-fill"></i>
-                            <span>Update Qualifications</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-8">
+        <div class="col-lg-12">
             <div class="card premium-table-card bg-white h-100 overflow-hidden">
                 <div class="card-header bg-transparent border-bottom pt-4 pb-3 px-4 d-flex justify-content-between align-items-center">
                     <h5 class="font-serif fw-bold mb-0 text-dark">Recent Registrations</h5>
@@ -289,21 +346,34 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach ($stats['recent_profiles'] as $profile)
+                                @php
+                                    if($profile['membership_type'] == 'vip'){
+                                        $icon = 'bi bi-shield-fill-check';
+                                    }elseif($profile['membership_type'] == 'premium'){
+                                        $icon = 'bi bi-star-fill';
+                                    }elseif($profile['membership_type'] == 'basic'){
+                                        $icon = 'bi bi-asterisk';
+                                    }else{
+                                        $icon = 'bi bi-emoji-smile';
+                                    }
+
+                                @endphp
                                 <tr>
                                     <td class="ps-4">
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold me-3 shadow-sm text-white bg-gradient-signature" style="width: 45px; height: 45px;">R</div>
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold me-3 shadow-sm text-white bg-gradient-signature" style="width: 45px; height: 45px;"><i class="{{ $icon }}"></i></div>
                                             <div>
-                                                <h6 class="mb-0 fw-bold text-dark font-sans">Rahul Sharma</h6>
-                                                <small class="text-muted fw-semibold">Software Engineer</small>
+                                                <h6 class="mb-0 fw-bold text-dark font-sans">{{ $profile->full_name }}</h6>
+                                                <small class="text-muted fw-semibold">{{ $profile->occupation }}</small>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="text-muted"><i class="bi bi-geo-alt-fill text-dark me-2"></i>Mumbai</span>
+                                        <span class="text-muted"><i class="bi bi-geo-alt-fill text-dark me-2"></i>{{ $profile->district }}, {{ $profile->state }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge rounded-pill" style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 6px 14px; font-weight: 700;">Active</span>
+                                        <span class="badge rounded-pill" style="{{ $profile->approval_status == 'approved' ? 'background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 6px 14px; font-weight: 700;' : 'background: rgba(217, 119, 6, 0.1); color: #d97706; padding: 6px 14px; font-weight: 700;' }}">{{ $profile->approval_status }}</span>
                                     </td>
                                     <td class="pe-4 text-end">
                                         <button class="btn btn-light rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px; color: #111; transition: all 0.3s ease;" onmouseover="this.style.background='#e75480'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#111'">
@@ -311,52 +381,8 @@
                                         </button>
                                     </td>
                                 </tr>
+                                @endforeach
                                 
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="d-flex align-items-center">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold me-3 shadow-sm text-white" style="width: 45px; height: 45px; background: #111;">P</div>
-                                            <div>
-                                                <h6 class="mb-0 fw-bold text-dark font-sans">Priya Patel</h6>
-                                                <small class="text-muted fw-semibold">Doctor</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="text-muted"><i class="bi bi-geo-alt-fill text-dark me-2"></i>Delhi</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge rounded-pill" style="background: rgba(217, 119, 6, 0.1); color: #d97706; padding: 6px 14px; font-weight: 700;">Pending</span>
-                                    </td>
-                                    <td class="pe-4 text-end">
-                                        <button class="btn btn-light rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px; color: #111; transition: all 0.3s ease;" onmouseover="this.style.background='#e75480'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#111'">
-                                            <i class="bi bi-arrow-right"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td class="ps-4 border-bottom-0">
-                                        <div class="d-flex align-items-center">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold me-3 shadow-sm text-white bg-gradient-signature" style="width: 45px; height: 45px;">A</div>
-                                            <div>
-                                                <h6 class="mb-0 fw-bold text-dark font-sans">Aditya Varma</h6>
-                                                <small class="text-muted fw-semibold">Architect</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="border-bottom-0">
-                                        <span class="text-muted"><i class="bi bi-geo-alt-fill text-dark me-2"></i>Bangalore</span>
-                                    </td>
-                                    <td class="border-bottom-0">
-                                        <span class="badge rounded-pill" style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 6px 14px; font-weight: 700;">Active</span>
-                                    </td>
-                                    <td class="pe-4 text-end border-bottom-0">
-                                        <button class="btn btn-light rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px; color: #111; transition: all 0.3s ease;" onmouseover="this.style.background='#e75480'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#111'">
-                                            <i class="bi bi-arrow-right"></i>
-                                        </button>
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>

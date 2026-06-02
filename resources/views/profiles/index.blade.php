@@ -136,7 +136,6 @@
 
     .split-layout {
         display: flex;
-        gap: 100px; /* Increased space between sidebar and form */
         height: calc(100vh - 140px);
         min-height: 800px;
         margin-bottom: 40px;
@@ -538,6 +537,52 @@
         border-radius: 50px;
     }
 
+    .match-score-tooltip strong {
+        display: block;
+        font-size: 0.75rem;
+        color: #e75480;
+        margin-top: 10px;
+        margin-bottom: 5px;
+    }
+
+    .match-score-breakdown {
+        padding: 0;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+    }
+
+    .match-score-breakdown::-webkit-scrollbar {
+        display: none;
+    }
+
+    .match-score-breakdown li {
+        list-style: none;
+        color: #000000;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .match-score-breakdown li::after{
+        content: '';
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        background: #e75480;
+        border-radius: 50%;
+        margin-left: 5px;
+    }
+
     @media (max-width: 991px) {
         .split-layout { flex-direction: column; height: auto; }
         .split-layout.list-only-mode .profile-list-pane { width: 100%; }
@@ -586,44 +631,50 @@
             <span class="fw-bold">Please fix the errors below.</span>
         </div>
     @endif
-    
-    <div class="row g-4 mb-5 animate-card delay-1">
-        <div class="col-md-6">
-            <div class="premium-card p-4 p-lg-5 h-100 d-flex flex-column justify-content-between">
-                <div>
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3" style="width: 50px; height: 50px; background: rgba(231, 84, 128, 0.1); color: #e75480; font-size: 1.5rem;">
-                        <i class="bi bi-cloud-upload-fill"></i>
+    <div class="premium-card mb-4 animate-card delay-1">
+        <div class="card-body p-4">
+            <h6 class="font-serif fw-bold mb-3 text-dark d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#importExportSection" style="cursor:pointer;">
+                <i class="bi bi-upload text-pink me-2" style="color: #e75480;"></i> Import & Export <i class="bi bi-chevron-down ms-auto text-muted"></i>
+            </h6>
+            <div class="row g-4 mb-5 animate-card delay-1 collapse" id="importExportSection">
+                <div class="col-md-6">
+                    <div class="premium-card p-4 p-lg-5 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3" style="width: 50px; height: 50px; background: rgba(231, 84, 128, 0.1); color: #e75480; font-size: 1.5rem;">
+                                <i class="bi bi-cloud-upload-fill"></i>
+                            </div>
+                            <h5 class="font-serif fw-bold text-dark mb-2">Import Profiles</h5>
+                            <p class="text-muted fw-medium mb-4" style="font-size: 0.95rem;">Upload a bulk list of profiles via spreadsheet.</p>
+                        </div>
+
+                        <form action="{{ route('admin.import') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="mb-4">
+                                <input type="file" name="file" class="form-control premium-input" required>
+                                <small class="text-muted mt-2 d-block fw-semibold">
+                                    Allowed formats: <span class="badge bg-light text-dark border">.xlsx</span> <span class="badge bg-light text-dark border">.csv</span>
+                                </small>
+                            </div>
+                            <button type="submit" class="btn-premium btn-glow w-100">Import Data</button>
+                        </form>
                     </div>
-                    <h5 class="font-serif fw-bold text-dark mb-2">Import Profiles</h5>
-                    <p class="text-muted fw-medium mb-4" style="font-size: 0.95rem;">Upload a bulk list of profiles via spreadsheet.</p>
                 </div>
 
-                <form action="{{ route('admin.import') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="mb-4">
-                        <input type="file" name="file" class="form-control premium-input" required>
-                        <small class="text-muted mt-2 d-block fw-semibold">
-                            Allowed formats: <span class="badge bg-light text-dark border">.xlsx</span> <span class="badge bg-light text-dark border">.csv</span>
-                        </small>
-                    </div>
-                    <button type="submit" class="btn-premium btn-glow w-100">Import Data</button>
-                </form>
-            </div>
-        </div>
+                <div class="col-md-6">
+                    <div class="premium-card p-4 p-lg-5 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3" style="width: 50px; height: 50px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; font-size: 1.5rem;">
+                                <i class="bi bi-cloud-download-fill"></i>
+                            </div>
+                            <h5 class="font-serif fw-bold text-dark mb-2">Export Profiles</h5>
+                            <p class="text-muted fw-medium mb-4" style="font-size: 0.95rem;">Download all existing profiles into an Excel spreadsheet for offline backup or deep analysis.</p>
+                        </div>
 
-        <div class="col-md-6">
-            <div class="premium-card p-4 p-lg-5 h-100 d-flex flex-column justify-content-between">
-                <div>
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3" style="width: 50px; height: 50px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; font-size: 1.5rem;">
-                        <i class="bi bi-cloud-download-fill"></i>
+                        <a href="{{ route('admin.export') }}" class="btn-premium btn-premium-outline w-100 text-center text-decoration-none mt-auto d-flex justify-content-center align-items-center">
+                            <i class="bi bi-file-earmark-excel-fill fs-5 me-2 text-success"></i> Download Report
+                        </a>
                     </div>
-                    <h5 class="font-serif fw-bold text-dark mb-2">Export Profiles</h5>
-                    <p class="text-muted fw-medium mb-4" style="font-size: 0.95rem;">Download all existing profiles into an Excel spreadsheet for offline backup or deep analysis.</p>
                 </div>
-
-                <a href="{{ route('admin.export') }}" class="btn-premium btn-premium-outline w-100 text-center text-decoration-none mt-auto d-flex justify-content-center align-items-center">
-                    <i class="bi bi-file-earmark-excel-fill fs-5 me-2 text-success"></i> Download Report
-                </a>
             </div>
         </div>
     </div>
@@ -634,7 +685,7 @@
                 <i class="bi bi-funnel-fill text-pink me-2" style="color: #e75480;"></i> Search & Filters <i class="bi bi-chevron-down ms-auto text-muted"></i>
             </h6>
             
-            <form method="GET" action="{{ route('admin.profiles.index') }}" id="filterForm" class="collapse {{ request()->anyFilled(['name', 'mobile', 'gender', 'marital_status', 'caste']) ? 'show' : '' }}">
+            <form method="GET" action="{{ route('admin.profiles.index') }}" id="filterForm" class="collapse {{ request()->anyFilled(['name', 'gender', 'marital_status', 'caste', 'birth_place', 'dob_from', 'dob_to', 'min_income', 'max_income', 'referenced_by']) ? 'show' : '' }}">
                 <div class="row g-3 align-items-end pt-2">
                     <div class="col-md-3">
                         <label class="filter-label">Full Name</label>
@@ -653,15 +704,49 @@
                         <select name="marital_status" class="form-select premium-input">
                             <option value="">Any</option>
                             <option value="Single" {{ request('marital_status')=='Single' ? 'selected' : '' }}>Single</option>
+                            <option value="Separated" {{ request('marital_status')=='Separated' ? 'selected' : '' }}>Separated</option>
+                            <option value="Divorced" {{ request('marital_status')=='Divorced' ? 'selected' : '' }}>Divorced</option>    
+                            <option value="Widowed" {{ request('marital_status')=='Widowed' ? 'selected' : '' }}>Widowed</option>
+                            <option value="Awaiting Divorce" {{ request('marital_status')=='Awaiting Divorce' ? 'selected' : '' }}>Awaiting Divorce</option>
                             <option value="Married" {{ request('marital_status')=='Married' ? 'selected' : '' }}>Married</option>
                         </select>
                     </div>
+
+                    <div class="col-md-2">
+                        <label class="premium-label">Referenced By</label>
+                        <select name="registered_by" class="form-select premium-input">
+                            <option value="">All</option>
+                            @foreach($references as $pcb)
+                                <option value="{{ $pcb->id }}" {{ old('registered_by', $profile->registered_by ?? '') == $pcb->id ? 'selected' : '' }}>
+                                    {{ mb_convert_case(str_replace('_', ' ', $pcb->name), MB_CASE_TITLE, 'UTF-8') }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div class="col-md-3">
                         <label class="filter-label">Location</label>
                         <input type="text" name="birth_place" class="form-control premium-input" placeholder="City" value="{{ request('birth_place') }}">
                     </div>
+
+                    <div class="col-md-4">
+                        <label class="filter-label">Date of Birth</label>
+                        <div class="d-flex gap-2">
+                            <input type="date" name="dob_from" class="form-control premium-input" placeholder="From" value="{{ request('dob_from') }}">
+                            <input type="date" name="dob_to" class="form-control premium-input" placeholder="To" value="{{ request('dob_to') }}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="filter-label">Annual Income</label>
+                        <div class="d-flex gap-2">
+                            <input type="number" name="min_income" class="form-control premium-input" placeholder="Min" value="{{ request('min_income') }}">
+                            <input type="number" name="max_income" class="form-control premium-input" placeholder="Max" value="{{ request('max_income') }}">
+                        </div>
+                    </div>
+
                     <div class="col-md-2 d-flex gap-2">
-                        <button type="submit" class="btn-glow flex-grow-1 px-0 d-flex justify-content-center align-items-center">
+                        <button type="submit" class="btn-glow btn flex-grow-1 px-0 d-flex justify-content-center align-items-center">
                             <i class="bi bi-search"></i>
                         </button>
                         <a href="{{ route('admin.profiles.index') }}" class="btn btn-light border flex-grow-1 px-0 d-flex justify-content-center align-items-center" title="Reset">
@@ -716,9 +801,9 @@
                             <div class="list-view-icon" title="View Profile" onclick="showProfileDetails({{ $profileLoop->id }}, this.closest('.list-item'), 'view'); event.stopPropagation();">
                                 <i class="bi bi-eye-fill"></i>
                             </div>
-                            <div class="list-view-icon" title="Edit Profile" onclick="showProfileDetails({{ $profileLoop->id }}, this.closest('.list-item'), 'edit'); event.stopPropagation();">
+                            <a class="list-view-icon" title="Edit Profile" href="{{ route('admin.profiles.edit', $profileLoop->id) }}" >
                                 <i class="bi bi-pencil-fill"></i>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 @empty
@@ -751,7 +836,7 @@
                         'religion' => $profileDetail->religion ?? '—',
                         'location' => $profileDetail->city ?? ($profileDetail->birth_place ?? '—'),
                         'about' => $profileDetail->about_myself ?? 'No bio provided yet.',
-                        'image' => $profileDetail->profile_photo ? asset('storage/'.$profileDetail->profile_photo) : null,
+                        'image' => $profileDetail->profile_photo ? asset('public/storage/'.$profileDetail->profile_photo) : null,
                         'gender' => ucfirst($profileDetail->gender ?? '—'),
                         'marital_status' => $profileDetail->marital_status ?? '—',
                         'dob' => $profileDetail->dob ? \Carbon\Carbon::parse($profileDetail->dob)->format('d M Y') : '—',
@@ -773,8 +858,18 @@
                         'sisters' => $profileDetail->no_of_sisters ?? 0,
                         'partner_age' => ($profileDetail->partner_min_age ?? '?').' - '.($profileDetail->partner_max_age ?? '?').' Years',
                         'partner_height' => ($profileDetail->partner_min_height ?? '?').' - '.($profileDetail->partner_max_height ?? '?').' cm',
-                        'partner_marital_status' => $profileDetail->partner_marital_status ?? 'Doesn\'t Matter',
-                        'partner_religion' => ($profileDetail->partner_religion ?? 'Any').' / '.($profileDetail->partner_caste ?? 'Any'),
+                        'partner_marital_status' => !empty($profileDetail->partner_marital_status)
+                                    ? implode(', ', (array) $profileDetail->partner_marital_status)
+                                    : "Doesn't Matter",
+
+                        'partner_religion' => 
+                                    (!empty($profileDetail->partner_religion)
+                                        ? implode(', ', (array) $profileDetail->partner_religion)
+                                        : 'Any')
+                                    .' / '.
+                                    (!empty($profileDetail->partner_caste)
+                                        ? implode(', ', (array) $profileDetail->partner_caste)
+                                        : 'Any'),
                         'partner_education' => $profileDetail->partner_education ?? 'Doesn\'t Matter',
                         'partner_location' => is_array($profileDetail->area_preference) ? implode(', ', $profileDetail->area_preference) : ($profileDetail->area_preference ?? 'Doesn\'t Matter')
                     ];
@@ -799,10 +894,34 @@
                         'https://images.unsplash.com/photo-1534751516642-a1af1ef26a56?w=400&h=500&fit=crop'
                     ];
                     shuffle($stockImages);
+
+                    $potentialMatches = App\Models\Profile::where('id', '!=', $profileDetail->id)
+                        ->where('gender', $profileDetail->gender == 'male' ? 'female' : 'male')
+                        ->get();
+
+                    $availableMatches = $potentialMatches->map(function($match) use ($profileDetail) {
+                                // Calculate match score
+                                $matchScore = $profileDetail->getMatchScore($match, true); // Pass 'true' to get detailed scoring breakdown
+                                
+                                // Save match score to database for future use (optional)
+                                if ($match->match_score != $matchScore['percentage']) {
+                                    $match->match_score = $matchScore['percentage'];
+                                    $match->saveQuietly(); // Save without triggering events
+                                }
+                                
+                                $match->calculated_match_score = $matchScore['percentage']; // Overall match percentage
+                                $match->match_details = implode(',',$matchScore['points']); // Detailed breakdown for tooltip
+                                return $match;
+                            })
+                            ->filter(function($match) {
+                                // Only show matches with score >= 50 (adjust as needed)
+                                return $match->calculated_match_score > 50;
+                            })
+                            ->sortByDesc('calculated_match_score');
                     
-                    $availableMatches = collect($profiles->items())->filter(function($p) use ($profileDetail) {
-                        return $p->id !== $profileDetail->id;
-                    })->take(3)->values();
+                    // $availableMatches = collect($profiles->items())->filter(function($p) use ($profileDetail) {
+                    //     return $p->id !== $profileDetail->id;
+                    // })->take(3)->values();
                 @endphp
 
                 <div class="profile-detail-content" id="detail-content-{{ $profileDetail->id }}" style="display: none;">
@@ -923,14 +1042,22 @@
                                         $matchName = !empty($match->first_name) ? trim($match->first_name.' '.$match->last_name) : 'Candidate '.$match->id;
                                         $matchAge = $match->age ?? rand(25, 32);
                                         $matchHeight = $match->height_feet ? $match->height_feet."' ".$match->height_inch."\"" : "5'".rand(3,9)."\"";
-                                        $matchScore = rand(85, 98); // Dummy match score
+                                        $matchScore = $match->calculated_match_score; // Dummy match score
                                     @endphp
                                     <div class="match-mini-card" onclick="showProfileDetails({{ $match->id }}, document.getElementById('list-item-{{ $match->id }}'), 'view')">
-                                        <img src="{{ $stockImages[$index % count($stockImages)] }}" class="match-mini-img" alt="Profile">
+                                        <img src="{{ $match->profile_photo_url }}" class="match-mini-img" alt="Profile">
                                         <div class="match-mini-info">
                                             <h5 class="match-mini-name">{{ $matchName }}</h5>
                                             <p class="match-mini-details">{{ $matchAge }} yrs, {{ $matchHeight }}</p>
                                             <span class="match-score-badge"><i class="bi bi-stars"></i> {{ $matchScore }}% Match</span>
+                                            <div class="match-score-tooltip">
+                                                <strong>Match Compatibility:</strong>
+                                                <ul class="match-score-breakdown">
+                                                    @foreach(explode(',', $match->match_details) as $detail)
+                                                        <li>{{ $detail }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 @endforeach
@@ -938,199 +1065,6 @@
                         </div>
                         @endif
                     </div>
-
-
-                    <form id="edit-mode-{{ $profileDetail->id }}" class="edit-mode" style="display: none;" method="POST" action="{{ route('admin.profiles.update', $profileDetail->id) }}" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        
-                        <div class="detail-hero-card edit-mode flex-column">
-                            <div class="d-flex justify-content-between align-items-center mb-3 w-100 border-bottom pb-3">
-                                <h2 class="font-serif text-dark m-0 fs-3">Edit Profile #{{ $profileDetail->id }}</h2>
-                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="toggleEditMode({{ $profileDetail->id }}, 'view')"><i class="bi bi-x-lg"></i> Cancel</button>
-                            </div>
-                            
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="edit-label">First Name</label>
-                                    <input type="text" name="first_name" class="form-control premium-input" value="{{ $profileDetail->first_name }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="edit-label">Last Name</label>
-                                    <input type="text" name="last_name" class="form-control premium-input" value="{{ $profileDetail->last_name }}">
-                                </div>
-                                <div class="col-12">
-                                    <label class="edit-label">About Me (Bio)</label>
-                                    <textarea name="about_myself" class="form-control premium-input" rows="3">{{ $profileDetail->about_myself }}</textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="detail-accordion-body mb-4 d-grid">
-                            <h4 class="font-serif text-dark mb-3" style="grid-column: 1/-1;"><i class="bi bi-person text-pink me-2"></i> Basic Info</h4>
-                            <div class="data-item">
-                                <label class="edit-label">Gender</label>
-                                <select name="gender" class="form-select premium-input">
-                                    <option value="Male" {{ $profileDetail->gender == 'Male' ? 'selected' : '' }}>Male</option>
-                                    <option value="Female" {{ $profileDetail->gender == 'Female' ? 'selected' : '' }}>Female</option>
-                                </select>
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Marital Status</label>
-                                <select name="marital_status" class="form-select premium-input">
-                                    <option value="Single" {{ $profileDetail->marital_status == 'Single' ? 'selected' : '' }}>Single</option>
-                                    <option value="Married" {{ $profileDetail->marital_status == 'Married' ? 'selected' : '' }}>Married</option>
-                                    <option value="Divorced" {{ $profileDetail->marital_status == 'Divorced' ? 'selected' : '' }}>Divorced</option>
-                                    <option value="Widowed" {{ $profileDetail->marital_status == 'Widowed' ? 'selected' : '' }}>Widowed</option>
-                                </select>
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Date of Birth</label>
-                                <input type="date" name="dob" class="form-control premium-input" value="{{ $profileDetail->dob ? \Carbon\Carbon::parse($profileDetail->dob)->format('Y-m-d') : '' }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Mother Tongue</label>
-                                <input type="text" name="mother_tongue" class="form-control premium-input" value="{{ $profileDetail->mother_tongue }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Diet</label>
-                                <select name="diet" class="form-select premium-input">
-                                    <option value="Vegetarian" {{ $profileDetail->diet == 'Vegetarian' ? 'selected' : '' }}>Vegetarian</option>
-                                    <option value="Non-Vegetarian" {{ $profileDetail->diet == 'Non-Vegetarian' ? 'selected' : '' }}>Non-Vegetarian</option>
-                                    <option value="Eggetarian" {{ $profileDetail->diet == 'Eggetarian' ? 'selected' : '' }}>Eggetarian</option>
-                                </select>
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Blood Group</label>
-                                <input type="text" name="blood_group" class="form-control premium-input" value="{{ $profileDetail->blood_group }}">
-                            </div>
-                        </div>
-
-                        <div class="detail-accordion-body mb-4 d-grid">
-                            <h4 class="font-serif text-dark mb-3" style="grid-column: 1/-1;"><i class="bi bi-book text-pink me-2"></i> Religious Background</h4>
-                            <div class="data-item">
-                                <label class="edit-label">Religion</label>
-                                <input type="text" name="religion" class="form-control premium-input" value="{{ $profileDetail->religion }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Caste</label>
-                                <input type="text" name="caste" class="form-control premium-input" value="{{ $profileDetail->caste }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Gotra</label>
-                                <input type="text" name="gotra" class="form-control premium-input" value="{{ $profileDetail->gotra }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Mangal Dosh</label>
-                                <select name="mangal_dosh" class="form-select premium-input">
-                                    <option value="No" {{ $profileDetail->mangal_dosh == 'No' ? 'selected' : '' }}>No</option>
-                                    <option value="Yes" {{ $profileDetail->mangal_dosh == 'Yes' ? 'selected' : '' }}>Yes</option>
-                                    <option value="Don't Know" {{ $profileDetail->mangal_dosh == "Don't Know" ? 'selected' : '' }}>Don't Know</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="detail-accordion-body mb-4 d-grid">
-                            <h4 class="font-serif text-dark mb-3" style="grid-column: 1/-1;"><i class="bi bi-briefcase text-pink me-2"></i> Education & Profession</h4>
-                            <div class="data-item" style="grid-column: span 2;">
-                                <label class="edit-label">Highest Education</label>
-                                <input type="text" name="highest_qualification" class="form-control premium-input" value="{{ $profileDetail->highest_qualification }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Occupation</label>
-                                <input type="text" name="occupation" class="form-control premium-input" value="{{ $profileDetail->occupation }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Company / Business</label>
-                                <input type="text" name="company_name" class="form-control premium-input" value="{{ $profileDetail->company_name }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Annual Income</label>
-                                <input type="text" name="annual_income" class="form-control premium-input" value="{{ $profileDetail->annual_income }}">
-                            </div>
-                        </div>
-
-                        <div class="detail-accordion-body mb-4 d-grid">
-                            <h4 class="font-serif text-dark mb-3" style="grid-column: 1/-1;"><i class="bi bi-house-door text-pink me-2"></i> Family Details</h4>
-                            <div class="data-item">
-                                <label class="edit-label">Family Type</label>
-                                <select name="family_type" class="form-select premium-input">
-                                    <option value="Nuclear" {{ $profileDetail->family_type == 'Nuclear' ? 'selected' : '' }}>Nuclear</option>
-                                    <option value="Joint" {{ $profileDetail->family_type == 'Joint' ? 'selected' : '' }}>Joint</option>
-                                </select>
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Family Status</label>
-                                <select name="family_status" class="form-select premium-input">
-                                    <option value="Middle Class" {{ $profileDetail->family_status == 'Middle Class' ? 'selected' : '' }}>Middle Class</option>
-                                    <option value="Upper Middle Class" {{ $profileDetail->family_status == 'Upper Middle Class' ? 'selected' : '' }}>Upper Middle Class</option>
-                                    <option value="Rich / Affluent" {{ $profileDetail->family_status == 'Rich / Affluent' ? 'selected' : '' }}>Rich / Affluent</option>
-                                </select>
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Father's Occupation</label>
-                                <input type="text" name="father_occupation" class="form-control premium-input" value="{{ $profileDetail->father_occupation }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Mother's Occupation</label>
-                                <input type="text" name="mother_occupation" class="form-control premium-input" value="{{ $profileDetail->mother_occupation }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">No. of Brothers</label>
-                                <input type="number" name="no_of_brothers" class="form-control premium-input" value="{{ $profileDetail->no_of_brothers }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">No. of Sisters</label>
-                                <input type="number" name="no_of_sisters" class="form-control premium-input" value="{{ $profileDetail->no_of_sisters }}">
-                            </div>
-                        </div>
-
-                        <div class="detail-accordion-body mb-4 d-grid" style="background: rgba(231,84,128,0.03);">
-                            <h4 class="font-serif text-dark mb-3" style="grid-column: 1/-1;"><i class="bi bi-heart text-pink me-2"></i> Partner Preferences</h4>
-                            <div class="data-item">
-                                <label class="edit-label">Min Age</label>
-                                <input type="number" name="partner_min_age" class="form-control premium-input" value="{{ $profileDetail->partner_min_age }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Max Age</label>
-                                <input type="number" name="partner_max_age" class="form-control premium-input" value="{{ $profileDetail->partner_max_age }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Min Height (cm)</label>
-                                <input type="number" name="partner_min_height" class="form-control premium-input" value="{{ $profileDetail->partner_min_height }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Max Height (cm)</label>
-                                <input type="number" name="partner_max_height" class="form-control premium-input" value="{{ $profileDetail->partner_max_height }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Marital Status</label>
-                                <input type="text" name="partner_marital_status" class="form-control premium-input" value="{{ $profileDetail->partner_marital_status }}" placeholder="e.g. Single, Divorced">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Religion</label>
-                                <input type="text" name="partner_religion" class="form-control premium-input" value="{{ $profileDetail->partner_religion }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Caste</label>
-                                <input type="text" name="partner_caste" class="form-control premium-input" value="{{ $profileDetail->partner_caste }}">
-                            </div>
-                            <div class="data-item">
-                                <label class="edit-label">Education</label>
-                                <input type="text" name="partner_education" class="form-control premium-input" value="{{ $profileDetail->partner_education }}">
-                            </div>
-                            <div class="data-item" style="grid-column: span 3;">
-                                <label class="edit-label">Location / Area Preference</label>
-                                <input type="text" name="area_preference" class="form-control premium-input" value="{{ is_array($profileDetail->area_preference) ? implode(', ', $profileDetail->area_preference) : $profileDetail->area_preference }}" placeholder="e.g. Delhi, Mumbai">
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
-                            <button type="button" class="btn-action-outline text-muted border-secondary" onclick="toggleEditMode({{ $profileDetail->id }}, 'view')">Discard Changes</button>
-                            <button type="submit" class="btn-action-solid"><i class="bi bi-save"></i> Save Profile Updates</button>
-                        </div>
-                    </form>
-
                 </div>
             @endforeach
 
@@ -1187,14 +1121,11 @@
     // Toggle between View and Edit within the same profile pane
     function toggleEditMode(profileId, mode) {
         const viewDiv = document.getElementById('view-mode-' + profileId);
-        const editForm = document.getElementById('edit-mode-' + profileId);
         
-        if (mode === 'edit') {
-            if(viewDiv) viewDiv.style.display = 'none';
-            if(editForm) editForm.style.display = 'block';
-        } else {
+        if (mode === 'view') {
             if(viewDiv) viewDiv.style.display = 'block';
-            if(editForm) editForm.style.display = 'none';
+        } else {
+            if(viewDiv) viewDiv.style.display = 'none';
         }
     }
 

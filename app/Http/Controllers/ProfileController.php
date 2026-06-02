@@ -10,6 +10,7 @@ use App\Models\Gotra;
 use App\Models\CountryCode;
 use App\Models\Education;
 use App\Models\Occupation;
+use App\Models\ReferBy;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
@@ -26,10 +27,6 @@ class ProfileController extends Controller
 
         if ($request->name) {
             $query->where('full_name', 'LIKE', "%{$request->name}%");
-        }
-
-        if ($request->mobile) {
-            $query->where('mobile', 'LIKE', "%{$request->mobile}%");
         }
 
         if ($request->gender) {
@@ -56,22 +53,42 @@ class ProfileController extends Controller
             $query->whereDate('dob', '<=', $request->dob_to);
         }
 
-        $profiles = $query->latest()->paginate(10)->appends($request->query());
+        if ($request->min_income) {
+            $query->where('annual_income', '>=', $request->min_income);
+        }
 
-        return view('profiles.index', compact('profiles'));
+        if ($request->max_income) {
+            $query->where('annual_income', '<=', $request->max_income);
+        }
+
+        if ($request->referenced_by) {
+            $query->where('registered_by', $request->referenced_by);
+        }
+
+        $profiles = $query->latest()->paginate(100)->appends($request->query());
+        $references = ReferBy::all();
+
+        return view('profiles.index', compact('profiles', 'references'));
     }
 
     // Show create form
     public function create()
     {
-        $Area        = Area::get();
-        $Caste       = Caste::get();
-        $Gotra       = Gotra::get();
-        $CountryCode = CountryCode::get();
-        $Education   = Education::get();
-        $Occupation  = Occupation::get();
+        $Area        = Area::all();
+        $Caste       = Caste::all();
+        $Gotra       = Gotra::all();
+        $CountryCode = CountryCode::all();
+        $Education   = Education::all();
+        $Occupation  = Occupation::all();
+        $references = ReferBy::all();
+        $subscriptionPlans = [
+            ['name' => 'free', 'duration' => '1 month', 'price' => 0],
+            ['name' => 'basic', 'duration' => '3 months', 'price' => 100],
+            ['name' => 'premium', 'duration' => '6 months', 'price' => 180],
+            ['name' => 'vip', 'duration' => '12 months', 'price' => 300],
+        ];
 
-        return view('profiles.create', compact('Area', 'Caste', 'Gotra', 'CountryCode', 'Education', 'Occupation'));
+        return view('profiles.create', compact('Area', 'Caste', 'Gotra', 'CountryCode', 'Education', 'Occupation', 'references', 'subscriptionPlans'));
     }
 
     // Store new profile
@@ -84,7 +101,7 @@ class ProfileController extends Controller
             'middle_name'               => 'nullable|string|max:255',
             'last_name'                 => 'nullable|string|max:255',
             'country_code'               => 'nullable|string|max:10',
-            'mobile'                     => 'required|string|max:20',
+            'mobile'                     => 'nullable|string|max:20',
             'alternate_mobile'           => 'nullable|string|max:20',
             'email'                      => 'nullable|email|max:255',
             'gender'                     => 'required|string|max:20',
@@ -186,23 +203,23 @@ class ProfileController extends Controller
             'family_location'                  => 'nullable|string|max:255',
 
             // ===== PARTNER PREFERENCES =====
-            'partner_min_age'                 => 'nullable|integer|min:18|max:100',
-            'partner_max_age'                 => 'nullable|integer|min:18|max:100',
+            'partner_min_age'                 => 'nullable|integer|min:1900|max:2100',
+            'partner_max_age'                 => 'nullable|integer|min:1900|max:2100',
             'partner_min_height'               => 'nullable|numeric|min:0',
             'partner_max_height'               => 'nullable|numeric|min:0',
-            'partner_religion'                 => 'nullable|string|max:100',
-            'partner_caste'                    => 'nullable|string|max:255',
+            'partner_religion'                 => 'nullable|array',
+            'partner_caste'                    => 'nullable|array',
             'partner_sub_caste'                => 'nullable|string|max:255',
             'partner_qualification'             => 'nullable|string|max:255',
-            'partner_occupation'                => 'nullable|string|max:255',
+            'partner_occupation'                => 'nullable|array',
             'partner_income'                    => 'nullable|numeric|min:0',
             'partner_country'                   => 'nullable|string|max:100',
             'partner_state'                     => 'nullable|string|max:100',
             'partner_city'                      => 'nullable|string|max:100',
             'partner_location'                  => 'nullable|string|max:255',
-            'partner_marital_status'             => 'nullable|string|max:50',
-            'partner_mangal_dosh'                => 'nullable|string|max:20',
-            'partner_diet'                       => 'nullable|string|max:50',
+            'partner_marital_status'             => 'nullable|array',
+            'partner_mangal_dosh'                => 'nullable|array',
+            'partner_diet'                       => 'nullable|array',
             'partner_complexion'                  => 'nullable|string|max:50',
             'partner_physical_status'             => 'nullable|string|max:100',
             'partner_family_background'           => 'nullable|string',
@@ -247,6 +264,8 @@ class ProfileController extends Controller
             // ===== HIDDEN / SYSTEM =====
             'user_id'                                        => 'nullable|integer|exists:users,id',
             'is_active'                                      => 'nullable|in:0,1',
+            'registered_by'                                  => 'nullable',
+            'membership_type'                                  => 'required|string|max:50',
         ]);
 
         // Height conversion (feet+inch → cm)
@@ -381,14 +400,21 @@ class ProfileController extends Controller
     // Show edit form
     public function edit(Profile $profile)
     {
-        $Area        = Area::get();
-        $Caste       = Caste::get();
-        $Gotra       = Gotra::get();
-        $CountryCode = CountryCode::get();
-        $Education   = Education::get();
-        $Occupation  = Occupation::get();
+        $Area        = Area::all();
+        $Caste       = Caste::all();
+        $Gotra       = Gotra::all();
+        $CountryCode = CountryCode::all();
+        $Education   = Education::all();
+        $Occupation  = Occupation::all();
+        $references = ReferBy::all();
+        $subscriptionPlans = [
+            ['name' => 'free', 'duration' => '1 month', 'price' => 0],
+            ['name' => 'basic', 'duration' => '3 months', 'price' => 100],
+            ['name' => 'premium', 'duration' => '6 months', 'price' => 180],
+            ['name' => 'vip', 'duration' => '12 months', 'price' => 300],
+        ];
 
-        return view('profiles.edit', compact('profile', 'Area', 'Caste', 'Gotra', 'CountryCode', 'Education', 'Occupation'));
+        return view('profiles.edit', compact('profile', 'Area', 'Caste', 'Gotra', 'CountryCode', 'Education', 'Occupation', 'references', 'subscriptionPlans'));
     }
 
     // Update profile
@@ -495,23 +521,23 @@ class ProfileController extends Controller
             'married_sisters'                  => 'nullable|integer|min:0',
             'family_location'                  => 'nullable|string|max:255',
 
-            'partner_min_age'                 => 'nullable|integer|min:18|max:100',
-            'partner_max_age'                 => 'nullable|integer|min:18|max:100',
+            'partner_min_age'                 => 'nullable|integer|min:1900|max:2100',
+            'partner_max_age'                 => 'nullable|integer|min:1900|max:2100',
             'partner_min_height'               => 'nullable|numeric|min:0',
             'partner_max_height'               => 'nullable|numeric|min:0',
-            'partner_religion'                 => 'nullable|string|max:100',
-            'partner_caste'                    => 'nullable|string|max:255',
+            'partner_religion'                 => 'nullable|array',
+            'partner_caste'                    => 'nullable|array',
             'partner_sub_caste'                => 'nullable|string|max:255',
             'partner_qualification'             => 'nullable|string|max:255',
-            'partner_occupation'                => 'nullable|string|max:255',
+            'partner_occupation'                => 'nullable|array',
             'partner_income'                    => 'nullable|numeric|min:0',
             'partner_country'                   => 'nullable|string|max:100',
             'partner_state'                     => 'nullable|string|max:100',
             'partner_city'                      => 'nullable|string|max:100',
             'partner_location'                  => 'nullable|string|max:255',
-            'partner_marital_status'             => 'nullable|string|max:50',
-            'partner_mangal_dosh'                => 'nullable|string|max:20',
-            'partner_diet'                       => 'nullable|string|max:50',
+            'partner_marital_status'             => 'nullable|array',
+            'partner_mangal_dosh'                => 'nullable|array',
+            'partner_diet'                       => 'nullable|array',
             'partner_complexion'                  => 'nullable|string|max:50',
             'partner_physical_status'             => 'nullable|string|max:100',
             'partner_family_background'           => 'nullable|string',
@@ -552,6 +578,8 @@ class ProfileController extends Controller
 
             'user_id'                                        => 'nullable|integer|exists:users,id',
             'is_active'                                      => 'nullable|in:0,1',
+            'registered_by'                                  => 'nullable',
+            'membership_type'                                  => 'required|string|max:50',
         ]);
 
         // Height conversion

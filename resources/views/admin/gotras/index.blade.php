@@ -234,6 +234,10 @@
             <h2 class="font-serif fw-bold m-0 text-gradient" style="font-size: 2.5rem;">Gotra Master</h2>
             <p class="text-muted mt-2 mb-0" style="font-size: 1rem; font-weight: 500;">Manage the lineage and gotra options available for profiles.</p>
         </div>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.gotras.export') }}" class="btn-glow" style="padding: 0.6rem 1.2rem;"><i class="bi bi-download me-2"></i>Export</a>
+            <a href="{{ route('admin.gotras.import.form') }}" class="btn-glow" style="background: #334155; box-shadow: none; padding: 0.6rem 1.2rem;"><i class="bi bi-upload me-2"></i>Import</a>
+        </div>
     </div>
 
     @if(session('success'))

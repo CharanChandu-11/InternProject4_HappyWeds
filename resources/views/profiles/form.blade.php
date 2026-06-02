@@ -283,6 +283,9 @@
     .conditional-marital {
         transition: opacity 0.3s ease;
     }
+    .w-60{
+        width: 60px !important;
+    }
 </style>
 @endpush
 
@@ -292,6 +295,25 @@
     @csrf
     @if(isset($profile))
         @method('PUT')
+    @endif
+
+    @if ($errors->any())
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999; width: 350px;">
+            <div class="alert alert-danger alert-dismissible fade show shadow">
+                
+                <strong class="d-block mb-2">
+                    <i class="fa fa-exclamation-circle"></i> Please fix the following errors:
+                </strong>
+
+                <ul class="mb-0 ps-3">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
     @endif
 
     <div class="row g-4 font-sans pb-5">
@@ -306,17 +328,17 @@
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-1 me-0 pe-0">
             <label class="premium-label">Title</label>
             <select name="title" class="form-select premium-input">
                 <option value="">Select</option>
-                @foreach(['Mr','Ms','Mrs','Dr'] as $t)
+                @foreach(['Mr','Ms'] as $t)
                     <option value="{{ $t }}" {{ old('title', $profile->title ?? '') == $t ? 'selected' : '' }}>{{ $t }}</option>
                 @endforeach
             </select>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3 ms-0 ps-0">
             <label class="premium-label">First Name *</label>
             <input type="text" name="first_name" class="form-control premium-input" value="{{ old('first_name', $profile->first_name ?? '') }}">
         </div>
@@ -326,7 +348,7 @@
             <input type="text" name="last_name" class="form-control premium-input" value="{{ old('last_name', $profile->last_name ?? '') }}">
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2 me-0 pe-0">
             <label class="premium-label">Country Code *</label>
             <select name="country_code" class="form-select premium-input select2" required>
                 <option value="">Select</option>
@@ -338,7 +360,7 @@
             </select>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3 ms-0 ps-0">
             <label class="premium-label">Mobile</label>
             <input type="text" name="mobile" class="form-control premium-input" value="{{ old('mobile', $profile->mobile ?? '') }}">
         </div>
@@ -363,6 +385,29 @@
             </select>
         </div>
 
+        <div class="col-md-3">
+            <label class="premium-label">Referenced By</label>
+            <select name="registered_by" class="form-select premium-input">
+                <option value="">Select</option>
+                @foreach($references as $pcb)
+                    <option value="{{ $pcb->id }}" {{ old('registered_by', $profile->registered_by ?? '') == $pcb->id ? 'selected' : '' }}>
+                        {{ mb_convert_case(str_replace('_', ' ', $pcb->name), MB_CASE_TITLE, 'UTF-8') }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="premium-label">Subscription Plan</label>
+            <select name="membership_type" class="form-select premium-input">
+                <option value="">Select</option>
+                @foreach($subscriptionPlans as $plan)
+                    <option value="{{ $plan['name'] }}" {{ old('membership_type', $profile->membership_type ?? 'free') == $plan['name'] ? 'selected' : '' }}>
+                        {{ $plan['name'] }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
         {{-- ================= BIRTH & PHYSICAL ================= --}}
         <div class="col-12 mt-5 mb-2">
@@ -403,32 +448,46 @@
             // Pre-calculate ft/in from stored CM for edit mode
             $heightFeet = '';
             $heightInch = '';
+
             if (!empty($profile->height_cm)) {
-                $totalInches    = round($profile->height_cm / 2.54);
-                $heightFeet     = intdiv($totalInches, 12);
-                $heightInch     = $totalInches % 12;
+                $totalInches = round($profile->height_cm / 2.54);
+
+                $heightFeet = intdiv($totalInches, 12);
+                $heightInch = $totalInches % 12;
             }
         @endphp
 
         <div class="col-md-3">
             <label class="premium-label">Height (Ft / In)</label>
+
             <div class="d-flex gap-2">
+
                 <select name="height_feet" id="height_feet" class="form-select premium-input">
                     <option value="">Feet</option>
+
                     @for($i = 1; $i <= 7; $i++)
-                        <option value="{{ $i }}" {{ old('height_feet', $heightFeet) == $i ? 'selected' : '' }}>{{ $i }} ft</option>
+                        <option value="{{ $i }}"
+                            {{ old('height_feet', $heightFeet) == $i ? 'selected' : '' }}>
+                            {{ $i }} ft
+                        </option>
                     @endfor
                 </select>
+
                 <select name="height_inch" id="height_inch" class="form-select premium-input">
                     <option value="">Inch</option>
+
                     @for($i = 0; $i <= 11; $i++)
-                        <option value="{{ $i }}" {{ old('height_inch', $heightInch) === (string)$i ? 'selected' : '' }}>{{ $i }} in</option>
+                        <option value="{{ $i }}"
+                            {{ old('height_inch', $heightInch) == $i ? 'selected' : '' }}>
+                            {{ $i }} in
+                        </option>
                     @endfor
                 </select>
+
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3 d-none">
             <label class="premium-label">Height (CM)</label>
             <input type="number" name="height_cm" id="height_cm" class="form-control premium-input"
                 value="{{ old('height_cm', $profile->height_cm ?? '') }}"
@@ -549,7 +608,7 @@
             <label class="premium-label">Mangal Dosh</label>
             <select name="mangal_dosh" class="form-select premium-input">
                 <option value="">Select</option>
-                @foreach(['yes','no','anshik'] as $dosh)
+                @foreach(['yes','no','anshik', 'not_sure'] as $dosh)
                     <option value="{{ $dosh }}" {{ old('mangal_dosh', $profile->mangal_dosh ?? '') == $dosh ? 'selected' : '' }}>{{ mb_convert_case($dosh, MB_CASE_TITLE, 'UTF-8') }}</option>
                 @endforeach
             </select>
@@ -641,24 +700,16 @@
             </select>
         </div>
 
+        
+
         <div class="col-md-3">
             <label class="premium-label">Self Income</label>
-            <select name="self_income" class="form-select premium-input select2">
-                <option value="">Select Range</option>
-                @foreach(['0 - 1 Lakhs','1 - 2 Lakhs','2 - 4 Lakhs','4 - 7 Lakhs','7 - 10 Lakhs','10 - 15 Lakhs','15 - 20 Lakhs','20 - 30 Lakhs','30+ Lakhs'] as $income)
-                    <option value="{{ $income }}" {{ old('self_income', $profile->self_income ?? '') == $income ? 'selected' : '' }}>{{ $income }}</option>
-                @endforeach
-            </select>
+            <input type="number" step="any" name="self_income" class="form-control premium-input" value="{{ old('self_income', $profile->self_income ?? '') }}">
         </div>
 
         <div class="col-md-3">
             <label class="premium-label">Family Income</label>
-            <select name="family_income" class="form-select premium-input select2">
-                <option value="">Select Range</option>
-                @foreach(['0 - 1 Lakhs','1 - 2 Lakhs','2 - 4 Lakhs','4 - 7 Lakhs','7 - 10 Lakhs','10 - 15 Lakhs','15 - 20 Lakhs','20 - 30 Lakhs','30+ Lakhs'] as $income)
-                    <option value="{{ $income }}" {{ old('family_income', $profile->family_income ?? '') == $income ? 'selected' : '' }}>{{ $income }}</option>
-                @endforeach
-            </select>
+            <input type="number" step="any" name="family_income" class="form-control premium-input" value="{{ old('family_income', $profile->family_income ?? '') }}">
         </div>
 
 
@@ -728,7 +779,7 @@
             <select name="father_occupation" class="form-select premium-input select2">
                 <option value="">Select</option>
                 @foreach($Occupation->sortBy('occupation') as $code)
-                    <option value="{{ $code['occupation'] }}" {{ old('father_occupation', $profile->father_occupation ?? '') == $code['occupation'] ? 'selected' : '' }}>{{ $code['occupation'] }}</option>
+                    <option value="{{ $code['occupation'] }}" {{ old('father_occupation', $profile->father_occupation ?? 'Businessman') == $code['occupation'] ? 'selected' : '' }}>{{ $code['occupation'] }}</option>
                 @endforeach
             </select>
         </div>
@@ -827,17 +878,25 @@
 
         <div class="col-md-3">
             <label class="premium-label">City</label>
-            <input type="text" name="city" class="form-control premium-input" value="{{ old('city', $profile->city ?? '') }}">
+            <select name="city" id="city" class="form-select premium-input select2">
+                <option value="">Select City</option>
+                @foreach($Area->unique('area')->sortBy('area') as $code)
+                    <option value="{{ $code['area'] }}" data-state="{{ $code['state'] }}" data-district="{{ $code['district'] }}" data-country="{{ $code['country'] }}"
+                        {{ old('city', $profile->city ?? '') == $code['area'] ? 'selected' : '' }}>
+                        {{ $code['area'] }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
         <div class="col-md-3">
             <label class="premium-label">District</label>
             <select name="district" id="district" class="form-select premium-input select2">
                 <option value="">Select District</option>
-                @foreach($Area->unique('area')->sortBy('area') as $code)
-                    <option value="{{ $code['area'] }}" data-state="{{ $code['state'] }}"
-                        {{ old('district', $profile->district ?? '') == $code['area'] ? 'selected' : '' }}>
-                        {{ $code['area'] }}
+                @foreach($Area->unique('district')->sortBy('district') as $code)
+                    <option value="{{ $code['district'] }}" data-state="{{ $code['state'] }}" data-country="{{ $code['country'] }}"
+                        {{ old('district', $profile->district ?? '') == $code['district'] ? 'selected' : '' }}>
+                        {{ $code['district'] }}
                     </option>
                 @endforeach
             </select>
@@ -848,17 +907,17 @@
             <select name="state" id="state" class="form-select premium-input select2">
                 <option value="">Select State</option>
                 @foreach($Area->unique('state')->sortBy('state') as $code)
-                    <option value="{{ $code['state'] }}" {{ old('state', $profile->state ?? '') == $code['state'] ? 'selected' : '' }}>{{ $code['state'] }}</option>
+                    <option value="{{ $code['state'] }}" data-country="{{ $code['country'] }}" {{ old('state', $profile->state ?? '') == $code['state'] ? 'selected' : '' }}>{{ $code['state'] }}</option>
                 @endforeach
             </select>
         </div>
 
         <div class="col-md-3">
             <label class="premium-label">Country *</label>
-            <select name="country" class="form-select premium-input select2" required>
+            <select name="country" class="form-select premium-input select2" id="country" required>
                 <option value="">Select</option>
-                @foreach($CountryCode->sortBy('country_name') as $code)
-                    <option value="{{ $code['country_name'] }}" {{ old('country', $profile->country ?? 'India') == $code['country_name'] ? 'selected' : '' }}>{{ $code['country_name'] }}</option>
+                @foreach($Area->unique('country')->sortBy('country') as $code)
+                    <option value="{{ $code['country'] }}" {{ old('country', $profile->country ?? 'India') == $code['country'] ? 'selected' : '' }}>{{ $code['country'] }}</option>
                 @endforeach
             </select>
         </div>
@@ -894,27 +953,197 @@
 
         <div class="col-md-3">
             <label class="premium-label">Min Age</label>
-            <input type="number" name="partner_min_age" class="form-control premium-input" value="{{ old('partner_min_age', $profile->partner_min_age ?? '') }}">
+            <input type="number" name="partner_min_age" class="form-control yearPicker premium-input" min="{{ date('Y')-71 }}" max="{{ date('Y') }}" value="{{ old('partner_min_age', $profile->partner_min_age ?? '') }}">
         </div>
 
         <div class="col-md-3">
             <label class="premium-label">Max Age</label>
-            <input type="number" name="partner_max_age" class="form-control premium-input" value="{{ old('partner_max_age', $profile->partner_max_age ?? '') }}">
+            <input type="number" name="partner_max_age" class="form-control yearPicker premium-input" min="{{ date('Y')-71 }}" max="{{ date('Y') }}" value="{{ old('partner_max_age', $profile->partner_max_age ?? '') }}">
         </div>
+        <div id="yearGrid" style="width:auto; display:none; position:absolute; background:#fff; border:1px solid #ddd; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding:10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; z-index: 1000; max-height: 200px; overflow-y: auto;"></div>
+        <script>
+            const inputs = document.querySelectorAll('.yearPicker');
+            const grid = document.getElementById('yearGrid');
+            
+            // Dynamic year range based on your requirements
+            const currentYear = new Date().getFullYear();
+            const startYear = currentYear - 71;
+            const endYear = currentYear;
+
+            let activeInput = null;
+
+            // Populate the grid once
+            for (let y = endYear; y >= startYear; y--) {
+                let btn = document.createElement('button');
+                btn.type = "button"; // Prevent form submission
+                btn.innerText = y;
+                btn.className = "btn btn-sm btn-outline-secondary w-60";
+                btn.onclick = (e) => {
+                    if (activeInput) {
+                        activeInput.value = y;
+                        grid.style.display = 'none';
+                    }
+                };
+                grid.appendChild(btn);
+            }
+
+            // Attach logic to all elements with class .yearPicker
+            inputs.forEach(input => {
+                input.addEventListener('click', function(e) {
+                    activeInput = this;
+                    
+                    // Position the grid under the clicked input
+                    grid.style.display = 'grid';
+                    grid.style.left = this.offsetLeft + "px";
+                    grid.style.top = (this.offsetTop + this.offsetHeight) + "px";
+                    
+                    e.stopPropagation();
+                });
+            });
+
+            // Close grid if clicked anywhere else
+            document.addEventListener('click', (e) => {
+                if (!grid.contains(e.target)) {
+                    grid.style.display = 'none';
+                }
+            });
+        </script>
+
+        @php
+            // Pre-calculate ft/in from stored CM for edit mode
+
+            $minheightFeet = '';
+            $minheightInch = '';
+
+            $maxheightFeet = '';
+            $maxheightInch = '';
+
+            // MIN HEIGHT
+            if (!empty($profile->partner_min_height)) {
+
+                $mintotalInches = round($profile->partner_min_height / 2.54);
+
+                $minheightFeet = intdiv($mintotalInches, 12);
+                $minheightInch = $mintotalInches % 12;
+            }
+
+            // MAX HEIGHT
+            if (!empty($profile->partner_max_height)) {
+
+                $maxtotalInches = round($profile->partner_max_height / 2.54);
+
+                $maxheightFeet = intdiv($maxtotalInches, 12);
+                $maxheightInch = $maxtotalInches % 12;
+            }
+        @endphp
 
         <div class="col-md-3">
-            <label class="premium-label">Min Height (cm)</label>
-            <input type="number" step="0.1" name="partner_min_height" class="form-control premium-input" value="{{ old('partner_min_height', $profile->partner_min_height ?? '') }}">
+            <label class="premium-label">Min Height (Ft / In)</label>
+
+            <div class="d-flex gap-0">
+
+                <select name="partner_min_height_feet"
+                        id="partner_min_height_feet"
+                        class="form-select premium-input">
+
+                    <option value="">Feet</option>
+
+                    @for($i = 1; $i <= 7; $i++)
+                        <option value="{{ $i }}"
+                            {{ old('partner_min_height_feet', $minheightFeet) == $i ? 'selected' : '' }}>
+                            {{ $i }} ft
+                        </option>
+                    @endfor
+
+                </select>
+
+                <select name="partner_min_height_inch"
+                        id="partner_min_height_inch"
+                        class="form-select premium-input">
+
+                    <option value="">Inch</option>
+
+                    @for($i = 0; $i <= 11; $i++)
+                        <option value="{{ $i }}"
+                            {{ old('partner_min_height_inch', $minheightInch) == $i ? 'selected' : '' }}>
+                            {{ $i }} in
+                        </option>
+                    @endfor
+
+                </select>
+
+            </div>
         </div>
 
+
+        <div class="col-md-3 d-none">
+            <label class="premium-label">Min Height (CM)</label>
+
+            <input type="number"
+                name="partner_min_height"
+                id="partner_min_height"
+                class="form-control premium-input"
+                value="{{ old('partner_min_height', $profile->partner_min_height ?? '') }}">
+        </div>
+
+
         <div class="col-md-3">
-            <label class="premium-label">Max Height (cm)</label>
-            <input type="number" step="0.1" name="partner_max_height" class="form-control premium-input" value="{{ old('partner_max_height', $profile->partner_max_height ?? '') }}">
+            <label class="premium-label">Max Height (Ft / In)</label>
+
+            <div class="d-flex gap-0">
+
+                <select name="partner_max_height_feet"
+                        id="partner_max_height_feet"
+                        class="form-select premium-input">
+
+                    <option value="">Feet</option>
+
+                    @for($i = 1; $i <= 7; $i++)
+                        <option value="{{ $i }}"
+                            {{ old('partner_max_height_feet', $maxheightFeet) == $i ? 'selected' : '' }}>
+                            {{ $i }} ft
+                        </option>
+                    @endfor
+
+                </select>
+
+                <select name="partner_max_height_inch"
+                        id="partner_max_height_inch"
+                        class="form-select premium-input">
+
+                    <option value="">Inch</option>
+
+                    @for($i = 0; $i <= 11; $i++)
+                        <option value="{{ $i }}"
+                            {{ old('partner_max_height_inch', $maxheightInch) == $i ? 'selected' : '' }}>
+                            {{ $i }} in
+                        </option>
+                    @endfor
+
+                </select>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-3 d-none">
+            <label class="premium-label">Max Height (CM)</label>
+
+            <input type="number"
+                name="partner_max_height"
+                id="partner_max_height"
+                class="form-control premium-input"
+                value="{{ old('partner_max_height', $profile->partner_max_height ?? '') }}">
         </div>
 
         <div class="col-md-3">
             <label class="premium-label">Religion</label>
-            <input type="text" name="partner_religion" class="form-control premium-input" value="{{ old('partner_religion', $profile->partner_religion ?? '') }}">
+            <select name="partner_religion[]" class="form-select select2 premium-input" multiple>
+                <option value="">Select</option>
+                @foreach(['Hinduism','Islam','Christianity','Sikhism','Buddhism','Jainism','Others'] as $religion)
+                    <option value="{{ $religion }}" {{ old('partner_religion', $profile->partner_religion ?? []) == $religion ? 'selected' : '' }}>{{ $religion }}</option>
+                @endforeach
+            </select>
         </div>
 
         {{-- ── CASTE PREFERENCES (multi-tag) ── --}}
@@ -939,35 +1168,28 @@
 
         <div class="col-md-3">
             <label class="premium-label">Occupation</label>
-            <select name="partner_occupation" class="form-select premium-input select2">
-                <option value="">Select</option>
+            <select name="partner_occupation[]" class="form-select premium-input select2" multiple>
                 @foreach($Occupation->sortBy('occupation') as $code)
-                    <option value="{{ $code['occupation'] }}" {{ old('partner_occupation', $profile->partner_occupation ?? '') == $code['occupation'] ? 'selected' : '' }}>{{ $code['occupation'] }}</option>
+                    <option value="{{ $code['occupation'] }}" {{ in_array($code['occupation'], old('partner_occupation', $profile->partner_occupation ?? [])) ? 'selected' : '' }}>{{ $code['occupation'] }}</option>
                 @endforeach
             </select>
         </div>
 
         <div class="col-md-3">
-            <label class="premium-label">Income Priority</label>
-            <select name="partner_income" class="form-select premium-input select2">
-                <option value="">Select Range</option>
-                @foreach(['0 - 2 Lakhs','2 - 4 Lakhs','4 - 7 Lakhs','7 - 10 Lakhs','10 - 15 Lakhs','15 - 20 Lakhs','20 - 30 Lakhs','30+ Lakhs'] as $income)
-                    <option value="{{ $income }}" {{ old('partner_income', $profile->partner_income ?? '') == $income ? 'selected' : '' }}>{{ $income }}</option>
-                @endforeach
-            </select>
+            <label class="premium-label">Min Income Priority</label>
+            <input type="number" step="any" name="partner_income" class="premium-input form-control" value="{{ old('partner_income', $profile->partner_income ?? '') }}">
         </div>
 
-        <div class="col-md-3 d-none">
-            <label class="premium-label">Budget/Demand (₹ in lakhs)</label>
-            <input type="number" step="0.01" name="partner_budget_demand" class="form-control premium-input" value="{{ old('partner_budget_demand', $profile->partner_budget_demand ?? '') }}">
+        <div class="col-md-3">
+            <label class="premium-label">Max Income Priority</label>
+            <input type="number" step="any" name="partner_budget_demand" class="premium-input form-control" value="{{ old('partner_budget_demand', $profile->partner_budget_demand ?? '') }}">
         </div>
 
         <div class="col-md-3">
             <label class="premium-label">Marital Status</label>
-            <select name="partner_marital_status" class="form-select premium-input">
-                <option value="">Select</option>
+            <select name="partner_marital_status[]" class="form-select premium-input select2" multiple>
                 @foreach(['single','separated','divorced','widowed','awaiting_divorce'] as $status)
-                    <option value="{{ $status }}" {{ old('partner_marital_status', $profile->partner_marital_status ?? '') == $status ? 'selected' : '' }}>
+                    <option value="{{ $status }}" {{ in_array($status, old('partner_marital_status', $profile->partner_marital_status ?? [])) ? 'selected' : '' }}>
                         {{ mb_convert_case(str_replace('_', ' ', $status), MB_CASE_TITLE, 'UTF-8') }}
                     </option>
                 @endforeach
@@ -976,20 +1198,20 @@
 
         <div class="col-md-3">
             <label class="premium-label">Mangal Dosh</label>
-            <select name="partner_mangal_dosh" class="form-select premium-input">
+            <select name="partner_mangal_dosh[]" class="form-select premium-input select2" multiple>
                 <option value="">Select</option>
-                @foreach(['yes','no','anshik'] as $dosh)
-                    <option value="{{ $dosh }}" {{ old('partner_mangal_dosh', $profile->partner_mangal_dosh ?? '') == $dosh ? 'selected' : '' }}>{{ mb_convert_case($dosh, MB_CASE_TITLE, 'UTF-8') }}</option>
+                @foreach(['yes','no','anshik', 'not_sure'] as $dosh)
+                    <option value="{{ $dosh }}" {{ in_array($dosh, old('partner_mangal_dosh', $profile->partner_mangal_dosh ?? [])) ? 'selected' : '' }}>{{ mb_convert_case($dosh, MB_CASE_TITLE, 'UTF-8') }}</option>
                 @endforeach
             </select>
         </div>
 
         <div class="col-md-3">
             <label class="premium-label">Diet</label>
-            <select name="partner_diet" class="form-select premium-input">
+            <select name="partner_diet[]" class="form-select premium-input select2" multiple>
                 <option value="">Select</option>
                 @foreach(['vegetarian','non_vegetarian','eggetarian','vegan','jain'] as $diet)
-                    <option value="{{ $diet }}" {{ old('partner_diet', $profile->partner_diet ?? 'vegetarian') == $diet ? 'selected' : '' }}>{{ mb_convert_case(str_replace('_', ' ', $diet), MB_CASE_TITLE, 'UTF-8') }}</option>
+                    <option value="{{ $diet }}" {{ in_array($diet, old('partner_diet', $profile->partner_diet ?? [])) ? 'selected' : '' }}>{{ mb_convert_case(str_replace('_', ' ', $diet), MB_CASE_TITLE, 'UTF-8') }}</option>
                 @endforeach
             </select>
         </div>
@@ -999,14 +1221,14 @@
             <select name="partner_physical_status" class="form-select premium-input">
                 <option value="">Select</option>
                 @foreach(['normal','physically_challenged'] as $ps)
-                    <option value="{{ $ps }}" {{ old('partner_physical_status', $profile->partner_physical_status ?? '') == $ps ? 'selected' : '' }}>
+                    <option value="{{ $ps }}" {{ old('partner_physical_status', $profile->partner_physical_status ?? 'normal') == $ps ? 'selected' : '' }}>
                         {{ mb_convert_case(str_replace('_', ' ', $ps), MB_CASE_TITLE, 'UTF-8') }}
                     </option>
                 @endforeach
             </select>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3 d-none">
             <label class="premium-label">Horoscope Required?</label>
             <select name="horoscope" class="form-select premium-input">
                 <option value="1" {{ old('horoscope', $profile->horoscope ?? '') == '1' ? 'selected' : '' }}>Yes</option>
@@ -1015,7 +1237,7 @@
         </div>
 
         {{-- ── AREA PREFERENCE (multi-tag) ── --}}
-        <div class="col-md-9">
+        <div class="col-md-6">
             <label class="premium-label">Area Preference</label>
 
             <select id="area_picker" class="form-select premium-input">
@@ -1059,9 +1281,9 @@
             <label class="premium-label">Profile Photo</label>
             <input type="file" name="profile_photo" class="form-control premium-input" accept="image/*">
             @if(isset($profile) && $profile->profile_photo)
-                <div class="mt-3 p-2 border rounded-4 bg-white d-inline-block shadow-sm">
-                    <img src="{{ asset('storage/profiles/'.$profile->profile_photo) }}" width="120" class="rounded-3" style="object-fit:cover;">
-                </div>
+                <a class="mt-3 p-2 border rounded-4 bg-white d-inline-block shadow-sm" href="{{ asset('public/storage/'.$profile->profile_photo) }}" target="_blank">
+                    <img src="{{ asset('public/storage/'.$profile->profile_photo) }}" width="120" class="rounded-3" style="object-fit:cover;">
+                </a>
             @endif
         </div>
 
@@ -1069,9 +1291,9 @@
             <label class="premium-label">Horoscope Image</label>
             <input type="file" name="horoscope_image" class="form-control premium-input" accept="image/*">
             @if(isset($profile) && $profile->horoscope_image)
-                <div class="mt-3 p-2 border rounded-4 bg-white d-inline-block shadow-sm">
-                    <img src="{{ asset('storage/'.$profile->horoscope_image) }}" width="120" class="rounded-3" style="object-fit:cover;">
-                </div>
+                <a class="mt-3 p-2 border rounded-4 bg-white d-inline-block shadow-sm" href="{{ asset('public/storage/'.$profile->horoscope_image) }}" target="_blank">
+                    <img src="{{ asset('public/storage/'.$profile->horoscope_image) }}" width="120" class="rounded-3" style="object-fit:cover;">
+                </a>
             @endif
         </div>
 
@@ -1081,7 +1303,9 @@
             @if(isset($profile) && $profile->family_images)
                 <div class="mt-3 p-2 border rounded-4 bg-white d-flex flex-wrap gap-2 shadow-sm">
                     @foreach($profile->family_images as $img)
-                        <img src="{{ asset('storage/'.$img) }}" width="80" height="80" class="rounded-3" style="object-fit:cover;">
+                        <a href="{{ asset('public/storage/'.$img) }}" target="_blank" class="d-block border rounded-3" title="View Full Image">
+                            <img src="{{ asset('public/storage/'.$img) }}" width="80" height="80" class="rounded-3" style="object-fit:cover;">
+                        </a>
                     @endforeach
                 </div>
             @endif
@@ -1091,11 +1315,11 @@
             <label class="premium-label">Video Profile</label>
             <input type="file" name="video_profile" class="form-control premium-input" accept="video/*">
             @if(isset($profile) && $profile->video_profile)
-                <div class="mt-3 p-2 border rounded-4 bg-white d-inline-block shadow-sm">
-                    <video width="200" class="rounded-3" controls>
-                        <source src="{{ asset('storage/'.$profile->video_profile) }}">
+                <a class="mt-3 p-2 border rounded-4 bg-white d-inline-block shadow-sm" href="{{ asset('public/storage/'.$profile->video_profile) }}" target="_blank">
+                    <video width="200" class="rounded-3" controls >
+                        <source src="{{ asset('public/storage/'.$profile->video_profile) }}">
                     </video>
-                </div>
+                </a>
             @endif
         </div>
 
@@ -1110,7 +1334,9 @@
             @if(isset($profile) && $profile->self_images)
                 <div class="mt-4 p-3 border rounded-4 bg-white d-flex flex-wrap gap-3 shadow-sm">
                     @foreach($profile->self_images as $img)
-                        <img src="{{ asset('storage/'.$img) }}" class="rounded-3 shadow-sm" width="100" height="100" style="object-fit:cover;">
+                        <a href="{{ asset('public/storage/'.$img) }}" target="_blank" class="d-block border rounded-3" title="View Full Image" >
+                            <img src="{{ asset('public/storage/'.$img) }}" class="rounded-3 shadow-sm" width="100" height="100" style="object-fit:cover;">
+                        </a>
                     @endforeach
                 </div>
             @endif
@@ -1153,26 +1379,26 @@ $(document).ready(function () {
     // ─────────────────────────────────────────────
     // 2. DISTRICT ↔ STATE FILTER
     // ─────────────────────────────────────────────
-    function filterDistricts() {
-        var state = $('#state').val();
-        var currentDistrict = $('#district').val();
-        var stillValid = false;
+    function filterData() { 
+        var selectedOption = $('#city option:selected');
 
-        $('#district option').each(function () {
-            var optState = $(this).data('state');
-            var disabled = !!(state && optState && optState !== state);
-            $(this).prop('disabled', disabled);
-            if (!disabled && $(this).val() === currentDistrict) stillValid = true;
-        });
+        if(selectedOption.val() !== ''){
+            var State = selectedOption.data('state');
+            var District = selectedOption.data('district');
+            var Country = selectedOption.data('country');
 
-        // Only reset district if currently selected one is now invalid
-        if (!stillValid && currentDistrict) {
-            $('#district').val(null).trigger('change');
+            $('#state').val(State).trigger('change');
+            $('#district').val(District).trigger('change');
+            $('#country').val(Country).trigger('change');
         }
     }
 
-    $('#state').on('change', filterDistricts);
-    filterDistricts(); // run once on load
+    $('#city').on('change', filterData);
+
+    // page load pe bhi run kare (edit case ke liye)
+    $(document).ready(function () {
+        filterData();
+    });
 
 
     // ─────────────────────────────────────────────
@@ -1272,6 +1498,38 @@ initTagPicker('area_picker',  'area_tags_display',  'area_hidden_form_data',  'a
             $('#height_cm').val(Math.round((feet * 12 + inches) * 2.54));
         } else {
             $('#height_cm').val('');
+        }
+
+        heightSource = null;
+    });
+
+    $('#partner_min_height_feet, #partner_min_height_inch').on('change', function () {
+        if (heightSource === 'cm') return;          // CM is driving right now, ignore
+        heightSource = 'ftin';
+
+        var feet   = parseInt($('#partner_min_height_feet').val(), 10) || 0;
+        var inches = parseInt($('#partner_min_height_inch').val(), 10) || 0;
+
+        if (feet > 0 || inches > 0) {
+            $('#partner_min_height').val(Math.round((feet * 12 + inches) * 2.54));
+        } else {
+            $('#partner_min_height').val('');
+        }
+
+        heightSource = null;
+    });
+
+    $('#partner_max_height_feet, #partner_max_height_inch').on('change', function () {
+        if (heightSource === 'cm') return;          // CM is driving right now, ignore
+        heightSource = 'ftin';
+
+        var feet   = parseInt($('#partner_max_height_feet').val(), 10) || 0;
+        var inches = parseInt($('#partner_max_height_inch').val(), 10) || 0;
+
+        if (feet > 0 || inches > 0) {
+            $('#partner_max_height').val(Math.round((feet * 12 + inches) * 2.54));
+        } else {
+            $('#partner_max_height').val('');
         }
 
         heightSource = null;

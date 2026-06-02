@@ -315,8 +315,7 @@
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav ms-auto align-items-lg-center">
                 <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="/search">Search</a></li>
-                <li class="nav-item"><a class="nav-link" href="/profiles">Browse Profiles</a></li>
+                <li class="nav-item"><a class="nav-link" href="/search">Search Profiles</a></li>
                 <li class="nav-item"><a class="nav-link" href="/success-stories">Success Stories</a></li>
                 
                 @auth

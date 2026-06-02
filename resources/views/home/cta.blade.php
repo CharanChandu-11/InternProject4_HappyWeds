@@ -201,6 +201,8 @@
                 <span><i class="bi bi-shield-check"></i> 100% Verified Profiles</span>
                 <span class="dot">•</span>
                 <span><i class="bi bi-lock-fill"></i> Safe & Secure</span>
+                <span class="dot">•</span>
+                <span><i class="bi bi-chat-dots"></i> Free Unlimited Chat</span>
             </div>
             
         </div>

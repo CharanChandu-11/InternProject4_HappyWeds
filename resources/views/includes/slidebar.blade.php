@@ -309,6 +309,12 @@
                         🧬 Gotras
                     </a>
                 </li>
+
+                <li class="{{ request()->routeIs('admin.refer-by.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.refer-by.index') }}">
+                        🔗 Refer By
+                    </a>
+                </li>
             </ul>
         </li>
         @endcan

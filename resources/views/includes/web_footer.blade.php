@@ -361,7 +361,7 @@
                             <span class="footer-logo-text">HappilyWeds</span>
                         </div>
                         <p class="footer-description">
-                            Your trusted partner in creating beautiful, memorable weddings. 
+                            Your trusted AI enabled partner in creating beautiful, memorable weddings. 
                             From planning to inspiration, we're here for every step of your journey.
                         </p>
                         <div class="footer-social mt-4">
@@ -389,8 +389,7 @@
                     <ul class="footer-links">
                         <li><a href="/">Home</a></li>
                         <li><a href="/planning">Wedding Planning</a></li>
-                        <li><a href="/inspiration">Inspiration</a></li>
-                        <li><a href="/vendors">Vendors</a></li>
+                        <li><a href="/success-stories">Inspiration</a></li>
                         <li><a href="/real-weddings">Real Weddings</a></li>
                         <li><a href="/blog">Blog</a></li>
                     </ul>
@@ -399,12 +398,11 @@
                 <div class="col-lg-3 col-md-6 mb-5">
                     <h4 class="footer-heading">Planning Tools</h4>
                     <ul class="footer-links">
-                        <li><a href="/planning/checklist">Wedding Checklist</a></li>
-                        <li><a href="/planning/budget">Budget Calculator</a></li>
-                        <li><a href="/planning/guest-list">Guest List Manager</a></li>
-                        <li><a href="/planning/seating">Seating Chart Tool</a></li>
-                        <li><a href="/planning/timeline">Timeline Planner</a></li>
-                        <li><a href="/planning/vendor-list">Vendor Checklist</a></li>
+                        <li><a href="/contact">Wedding Checklist</a></li>
+                        <li><a href="/contact">Budget Calculator</a></li>
+                        <li><a href="/contact">Guest List Manager</a></li>
+                        <li><a href="/contact">Seating Chart Tool</a></li>
+                        <li><a href="/contact">Timeline Planner</a></li>
                     </ul>
                 </div>
 
@@ -458,7 +456,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <div class="app-download">
-                        <h5 class="mb-3">Download Our App</h5>
+                        <h5 class="mb-3">Download Our App <span>(Coming Soon)</span> </h5>
                         <div class="app-buttons">
                             <a href="#" class="app-btn app-store">
                                 <i class="bi bi-apple"></i>

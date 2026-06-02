@@ -20,7 +20,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ Request::is('search*') ? 'active' : '' }}" href="/search">
-                        <i class="bi bi-search d-lg-none me-2"></i>Search
+                        <i class="bi bi-search d-lg-none me-2"></i>Search Profiles
                     </a>
                 </li>
                 <li class="nav-item">

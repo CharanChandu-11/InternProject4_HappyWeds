@@ -206,28 +206,34 @@
 <section class="py-5 bg-pattern-hearts border-bottom">
     <div class="container">
         <div class="row g-4 text-center">
-            <div class="col-6 col-md-3">
-                <div class="p-4 rounded-4 bg-white shadow-sm hover-lift h-100">
-                    <div class="display-5 fw-bold text-pink stat-number mb-2" data-count="1000+">0</div>
-                    <div class="fw-semibold text-dark">Success Stories</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
+            <div class="col">
                 <div class="p-4 rounded-4 bg-white shadow-sm hover-lift h-100">
                     <div class="display-5 fw-bold text-pink stat-number mb-2" data-count="500+">0</div>
-                    <div class="fw-semibold text-dark">Video Stories</div>
+                    <div class="fw-semibold text-dark">Happy Marriages</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col">
                 <div class="p-4 rounded-4 bg-white shadow-sm hover-lift h-100">
-                    <div class="display-5 fw-bold text-pink stat-number mb-2" data-count="42+">0</div>
-                    <div class="fw-semibold text-dark">Countries</div>
+                    <div class="display-5 fw-bold text-pink stat-number mb-2" data-count="500+">0</div>
+                    <div class="fw-semibold text-dark">Verified Members</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col">
+                <div class="p-4 rounded-4 bg-white shadow-sm hover-lift h-100">
+                    <div class="display-5 fw-bold text-pink stat-number mb-2" data-count="200+">0</div>
+                    <div class="fw-semibold text-dark">Cities Covered</div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="p-4 rounded-4 bg-white shadow-sm hover-lift h-100">
+                    <div class="display-5 fw-bold text-pink stat-number mb-2" data-count="5+">0</div>
+                    <div class="fw-semibold text-dark">Countries Covered</div>
+                </div>
+            </div>
+            <div class="col">
                 <div class="p-4 rounded-4 bg-white shadow-sm hover-lift h-100">
                     <div class="display-5 fw-bold text-pink stat-number mb-2" data-count="98%">0</div>
-                    <div class="fw-semibold text-dark">Happy Couples</div>
+                    <div class="fw-semibold text-dark">Success Rate</div>
                 </div>
             </div>
         </div>

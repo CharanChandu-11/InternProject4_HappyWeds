@@ -185,8 +185,8 @@
                     <div class="feature-icon">
                         <i class="bi bi-heart-pulse"></i> 
                     </div>
-                    <h3>Smart Matching</h3>
-                    <p>Advanced algorithms find highly compatible matches based on your lifestyle.</p>
+                    <h3>AI-Powered Smart Matching</h3>
+                    <p>Advanced AI algorithms analyze your lifestyle and preferences to find highly compatible matches.</p>
                 </div>
             </div>
             
@@ -211,4 +211,8 @@
             </div>
         </div>
     </div>
+    
+</section>
+<section>
+    <img src="{{ asset('public/assets/images/feature-bg.png') }}" alt="Feature Background" class="img-fluid" style="width: 100%;">
 </section>

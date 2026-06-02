@@ -235,6 +235,12 @@ class Profile extends Model
         'self_images' => 'array',
         'family_images' => 'array',
         'area_preference' => 'array',
+        'partner_religion' => 'array',
+        'partner_caste' => 'array',
+        'partner_occupation' => 'array',
+        'partner_marital_status' => 'array',
+        'partner_mangal_dosh' => 'array',
+        'partner_diet' => 'array',
         'hobbies' => 'array',
         'interests' => 'array',
         'education_details' => 'array',
@@ -389,10 +395,11 @@ class Profile extends Model
         
         $inches = $this->height_cm / 2.54;
         $feet = floor($inches / 12);
-        $remainingInches = round($inches % 12);
+        $remainingInches = round($inches - ($feet * 12));
         
         return "{$feet}'{$remainingInches}\"";
     }
+    
 
     public function getAgeYearsAttribute()
     {
@@ -612,26 +619,30 @@ return $this->profile_completion;
 
     public function incrementViews()
     {
-        $this->increment('profile_views');
+        $this->increment('profile_views', 1, []);
         return $this;
     }
 
     public function incrementShortlisted()
     {
-        $this->increment('shortlisted_count');
+        $this->increment('shortlisted_count', 1, []);
         return $this;
     }
 
-    public function getMatchScore(Profile $otherProfile)
+    public function getMatchScore(Profile $otherProfile, $detailed = false)
     {
         $score = 0;
-        $total = 100;
+        $total = 200;
+        $points = [];
         
         // Age compatibility
         if ($this->partner_min_age && $this->partner_max_age && $otherProfile->age_years) {
             $age = $otherProfile->age_years;
-            if ($age >= $this->partner_min_age && $age <= $this->partner_max_age) {
-                $score += 15;
+            $minAge = date('Y') - $this->partner_min_age;
+            $maxAge = date('Y') - $this->partner_max_age;
+            if ($age >= $minAge && $age <= $maxAge) {
+                $score += 20;
+                $points[] = "Age";
             }
         }
         
@@ -639,25 +650,65 @@ return $this->profile_completion;
         if ($this->partner_min_height && $this->partner_max_height && $otherProfile->height_cm) {
             $height = $otherProfile->height_cm;
             if ($height >= $this->partner_min_height && $height <= $this->partner_max_height) {
-                $score += 15;
+                $score += 20;
+                $points[] = "Height";
             }
         }
 
-        if($this->marital_status == 'unmarried'){
-            // Marital status compatibility
-            if ($this->partner_marital_status && $otherProfile->marital_status) {
-                if ($otherProfile->marital_status == $this->partner_marital_status) {
+        if ($this->partner_religion && is_array($this->partner_religion) && $otherProfile->religion) {
+            if (in_array($otherProfile->religion, $this->partner_religion)) {
+                $score += 10;
+                $points[] = "Religion";
+            }
+        }
+
+        if ($this->partner_caste && is_array($this->partner_caste) && $otherProfile->caste) {
+            if (in_array($otherProfile->caste, $this->partner_caste)) {
+                $score += 10;
+                $points[] = "Caste";
+            }elseif($this->caste_barrier == 'no'){
+                $score += 5; 
+                $points[] = "Caste barrier not an issue";
+            }
+        }
+
+        if ($this->partner_occupation && is_array($this->partner_occupation) && $otherProfile->occupation) {
+            foreach ($this->partner_occupation as $occupation) {
+                if (stripos($otherProfile->occupation, $occupation) !== false || 
+                    stripos($otherProfile->designation, $occupation) !== false || 
+                    stripos($otherProfile->industry, $occupation) !== false) {
                     $score += 10;
+                    $points[] = "Occupation";
+                    break;
                 }
             }
         }
 
-        if($this->mangle_dosh){
-            // Mangal dosh compatibility
-            if ($this->partner_mangal_dosh && $otherProfile->mangal_dosh) {
-                if ($otherProfile->mangal_dosh == $this->partner_mangal_dosh) {
-                    $score += 10;
-                }
+        if ($this->partner_marital_status && is_array($this->partner_marital_status) && $otherProfile->marital_status) {
+            if (in_array($otherProfile->marital_status, $this->partner_marital_status)) {
+                $score += 10;
+                $points[] = "Marital status";
+            }
+        }
+
+        if ($this->partner_mangal_dosh && is_array($this->partner_mangal_dosh) && $otherProfile->mangal_dosh) {
+            if (in_array($otherProfile->mangal_dosh, $this->partner_mangal_dosh)) {
+                $score += 10;
+                $points[] = "Mangal Dosh";
+            }
+        }
+
+        if ($this->partner_diet && is_array($this->partner_diet) && $otherProfile->diet) {
+            if (in_array($otherProfile->diet, $this->partner_diet)) {
+                $score += 10;
+                $points[] = "Diet";
+            }
+        }
+
+        if($this->partner_physical_status && $otherProfile->physical_status) {
+            if ($otherProfile->physical_status == $this->partner_physical_status) {
+                $score += 10;
+                $points[] = "Physical status";
             }
         }
 
@@ -665,36 +716,32 @@ return $this->profile_completion;
             foreach ($this->area_preference as $location) {
                 if (stripos($otherProfile->city, $location) !== false || 
                     stripos($otherProfile->state, $location) !== false) {
-                    $score += 20;
+                    $score += 40;
+                    $points[] = "Location";
                     break;
                 }
             }
         }
         
-        if($this->gender == 'male'){
-            // Income compatibility
-            if ($this->partner_income && $otherProfile->annual_income) {
-                if ($otherProfile->annual_income >= $this->partner_income) {
-                    $score += 30;
+        if ($this->partner_income && $otherProfile->self_income) {
+            if ($otherProfile->self_income >= $this->partner_income) {
+                $score += 25;
+                $points[] = "Income";
+                if($this->partner_budget_demand && $otherProfile->self_income <= $this->partner_budget_demand) {
+                    $score += 25;
+                    $points[] = "Budget demand";
                 }
-            }
-
-
-        } elseif($this->gender == 'female'){
-            // budget compatibility
-            if ($this->partner_budget_demand && $otherProfile->budget_demand) {
-                if ($otherProfile->budget_demand >= $this->partner_budget_demand) {
-                    $score += 20;
-                }
-            }
-            
-            // working 
-            if ($this->job_type == 'government' || $this->job_type == 'private' || $this->job_type == 'business' ){
-                $score += 10;
             }
         }
         
-        
+        if ($detailed) {
+            return [
+                'score' => $score,
+                'total' => $total,
+                'percentage' => $total > 0 ? round(($score / $total) * 100) : 0,
+                'points' => $points
+            ];
+        }
         
         return $total > 0 ? round(($score / $total) * 100) : 0;
     }
