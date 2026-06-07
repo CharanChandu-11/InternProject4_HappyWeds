@@ -775,6 +775,80 @@
 
     <div class="split-layout list-only-mode animate-card delay-2" id="mainSplitLayout">
         
+        {{-- VIEW TOGGLE BUTTONS --}}
+    <div class="d-flex justify-content-end mb-3 animate-card delay-1">
+        <div class="btn-group shadow-sm border" style="border-radius: 12px; overflow: hidden;" role="group">
+            <button type="button" class="btn btn-dark active" id="btnListView" onclick="toggleViewMode('list')" style="font-size: 0.85rem; font-weight: 600;">
+                <i class="bi bi-layout-split me-1"></i> Card View
+            </button>
+            <button type="button" class="btn btn-light text-secondary" id="btnTableView" onclick="toggleViewMode('table')" style="font-size: 0.85rem; font-weight: 600;">
+                <i class="bi bi-table me-1"></i> Table View
+            </button>
+        </div>
+    </div>
+
+    {{-- TABLE VIEW CONTAINER (Hidden by default) --}}
+    <div id="tableViewContainer" class="premium-card p-0 d-none mb-5 animate-card delay-2 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
+                <thead class="table-light" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">
+                    <tr>
+                        <th class="ps-4 py-3 text-secondary">ID</th>
+                        <th class="py-3 text-secondary">Candidate Name</th>
+                        <th class="py-3 text-secondary">Age</th>
+                        <th class="py-3 text-secondary">Location</th>
+                        <th class="py-3 text-secondary">Income</th>
+                        <th class="py-3 text-secondary">Membership</th>
+                        <th class="py-3 text-secondary">Refer By</th>
+                        <th class="pe-4 py-3 text-secondary text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($profiles as $pt)
+                        @php
+                            $ptName = !empty($pt->first_name) ? trim($pt->first_name.' '.$pt->last_name) : 'Candidate '.$pt->id;
+                            $ptAge = $pt->dob ? \Carbon\Carbon::parse($pt->dob)->age . ' yrs' : '—';
+                            $ptIncome = $pt->annual_income ? '₹'.number_format($pt->annual_income) : '—';
+                            $ptMem = ucfirst($pt->membership_type ?? 'Free');
+                            
+                            $ptRefName = 'Direct';
+                            if ($pt->registered_by) {
+                                $ref = collect($references)->firstWhere('id', $pt->registered_by);
+                                $ptRefName = $ref ? mb_convert_case(str_replace('_', ' ', $ref->name), MB_CASE_TITLE, 'UTF-8') : 'Direct';
+                            }
+                        @endphp
+                        <tr>
+                            <td class="ps-4 fw-bold text-muted">#{{ $pt->id }}</td>
+                            <td class="fw-bold text-dark">{{ $ptName }}</td>
+                            <td>{{ $ptAge }}</td>
+                            <td>{{ $pt->city ?? ($pt->birth_place ?? '—') }}</td>
+                            <td class="fw-semibold text-success">{{ $ptIncome }}</td>
+                            <td><span class="badge rounded-pill" style="background: #e75480; font-weight: 600;">{{ $ptMem }}</span></td>
+                            <td class="text-muted"><i class="bi bi-person-lines-fill me-1"></i>{{ $ptRefName }}</td>
+                            <td class="pe-4 text-end">
+                                <a href="{{ route('admin.profiles.edit', $pt->id) }}" class="btn btn-sm btn-light border text-primary rounded-circle me-1" title="Edit"><i class="bi bi-pencil-fill"></i></a>
+                                <form method="POST" action="{{ route('admin.profiles.destroy', $pt->id) }}" onsubmit="return confirm('Delete this profile?');" class="d-inline">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-light border text-danger rounded-circle" title="Delete"><i class="bi bi-trash-fill"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="8" class="text-center py-5 text-muted"><i class="bi bi-search fs-3 d-block mb-2"></i>No profiles found</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        @if($profiles->hasPages())
+            <div class="p-3 border-top bg-light">
+                {{ $profiles->appends(request()->query())->links('pagination::bootstrap-5') }}
+            </div>
+        @endif
+    </div>
+
+    {{-- EXISTING SPLIT LAYOUT (List View) --}}
+    <div class="split-layout list-only-mode animate-card delay-2" id="mainSplitLayout">
+        
         <div class="profile-list-pane">
             <div class="list-header">
                 <span>Directory</span>
@@ -788,22 +862,52 @@
                         $initial = substr($profileLoop->first_name ?? 'U', 0, 1);
                         $listName = !empty($profileLoop->first_name) ? trim($profileLoop->first_name.' '.$profileLoop->last_name) : 'Candidate '.$profileLoop->id;
                         $listLoc = !empty($profileLoop->city) ? $profileLoop->city : ($profileLoop->birth_place ?? 'Location Unknown');
+                        
+                        // --- NEW CARD DETAILS ---
+                        $age = $profileLoop->dob ? \Carbon\Carbon::parse($profileLoop->dob)->age . ' yrs' : 'N/A';
+                        $income = $profileLoop->annual_income ? '₹'.number_format($profileLoop->annual_income) : 'N/A';
+                        $membership = ucfirst($profileLoop->membership_type ?? 'Free');
+                        
+                        $referByName = 'Direct';
+                        if ($profileLoop->registered_by) {
+                            $ref = collect($references)->firstWhere('id', $profileLoop->registered_by);
+                            $referByName = $ref ? mb_convert_case(str_replace('_', ' ', $ref->name), MB_CASE_TITLE, 'UTF-8') : 'Direct';
+                        }
                     @endphp
 
-                    <div class="list-item" id="list-item-{{ $profileLoop->id }}" onclick="showProfileDetails({{ $profileLoop->id }}, this, 'view')">
-                        <div class="list-id">#{{ $profileLoop->id }}</div>
-                        <div class="list-avatar">{{ strtoupper($initial) }}</div>
-                        <div class="list-info">
-                            <h4 class="list-name">{{ $listName }}</h4>
+                    <div class="list-item align-items-stretch" id="list-item-{{ $profileLoop->id }}" onclick="showProfileDetails({{ $profileLoop->id }}, this, 'view')">
+                        
+                        <div class="list-avatar mt-1">{{ strtoupper($initial) }}</div>
+                        
+                        <div class="list-info w-100 pe-2" style="min-width: 0;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h4 class="list-name mb-0 text-truncate" style="max-width: 65%;">{{ $listName }}</h4>
+                                <span class="badge" style="background: #e75480; font-size: 0.6rem; letter-spacing: 0.5px;">{{ $membership }}</span>
+                            </div>
+                            
                             <div class="list-loc"><i class="bi bi-geo-alt-fill"></i> {{ strtoupper($listLoc) }}</div>
+                            
+                            {{-- NEW MINI DATA BADGES --}}
+                            <div class="d-flex flex-wrap gap-2 mt-2" style="font-size: 0.7rem; color: #64748b; font-weight: 600;">
+                                <span class="bg-white border px-2 py-1 rounded text-dark"><i class="bi bi-calendar3 me-1" style="color: #e75480;"></i>{{ $age }}</span>
+                                <span class="bg-white border px-2 py-1 rounded text-dark"><i class="bi bi-wallet2 me-1" style="color: #e75480;"></i>{{ $income }}</span>
+                                <span class="bg-white border px-2 py-1 rounded text-dark"><i class="bi bi-person-lines-fill me-1" style="color: #e75480;"></i>{{ $referByName }}</span>
+                            </div>
                         </div>
-                        <div class="list-action-icons">
-                            <div class="list-view-icon" title="View Profile" onclick="showProfileDetails({{ $profileLoop->id }}, this.closest('.list-item'), 'view'); event.stopPropagation();">
+
+                        <div class="list-action-icons d-flex flex-column justify-content-center gap-1 ms-1 border-start ps-2">
+                            <div class="list-view-icon" style="width: 28px; height: 28px; font-size: 0.8rem;" title="View Profile" onclick="showProfileDetails({{ $profileLoop->id }}, this.closest('.list-item'), 'view'); event.stopPropagation();">
                                 <i class="bi bi-eye-fill"></i>
                             </div>
-                            <a class="list-view-icon" title="Edit Profile" href="{{ route('admin.profiles.edit', $profileLoop->id) }}" >
+                            <a class="list-view-icon" style="width: 28px; height: 28px; font-size: 0.8rem;" title="Edit Profile" href="{{ route('admin.profiles.edit', $profileLoop->id) }}" >
                                 <i class="bi bi-pencil-fill"></i>
                             </a>
+                            <form method="POST" action="{{ route('admin.profiles.destroy', $profileLoop->id) }}" onsubmit="return confirm('Are you sure you want to delete this profile?');" class="d-inline">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="list-view-icon" title="Delete Profile" style="width: 28px; height: 28px; font-size: 0.8rem; background: none; border: none; padding: 0; margin: 0; cursor: pointer;">
+                                    <i class="bi bi-trash-fill text-danger"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 @empty
@@ -1079,6 +1183,34 @@
     // ==========================================
     // DYNAMIC SPLIT PANE SPA CONTROLLER
     // ==========================================
+    // Toggle between Card Split View and Full Table View
+    function toggleViewMode(mode) {
+        const listLayout = document.getElementById('mainSplitLayout');
+        const tableContainer = document.getElementById('tableViewContainer');
+        const btnList = document.getElementById('btnListView');
+        const btnTable = document.getElementById('btnTableView');
+
+        if (mode === 'table') {
+            // Show Table
+            listLayout.classList.add('d-none');
+            tableContainer.classList.remove('d-none');
+            // Update Buttons
+            btnTable.classList.add('btn-dark', 'active');
+            btnTable.classList.remove('btn-light', 'text-secondary');
+            btnList.classList.add('btn-light', 'text-secondary');
+            btnList.classList.remove('btn-dark', 'active');
+        } else {
+            // Show Split Layout
+            listLayout.classList.remove('d-none');
+            tableContainer.classList.add('d-none');
+            // Update Buttons
+            btnList.classList.add('btn-dark', 'active');
+            btnList.classList.remove('btn-light', 'text-secondary');
+            btnTable.classList.add('btn-light', 'text-secondary');
+            btnTable.classList.remove('btn-dark', 'active');
+        }
+    }
+    
     function showProfileDetails(profileId, listItemElement, mode = 'view') {
         
         // 1. Trigger layout shift by removing full-width class

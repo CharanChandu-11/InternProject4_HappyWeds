@@ -113,3 +113,112 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- 1. Source Elements (The User's Data) ---
+    const genderEl = document.querySelector('[name="gender"]');
+    const dobEl = document.querySelector('[name="dob"]');
+    const heightFeetEl = document.querySelector('[name="height_feet"]');
+    const heightInchEl = document.querySelector('[name="height_inch"]');
+    const maritalStatusEl = document.querySelector('[name="marital_status"]');
+    const religionEl = document.querySelector('[name="religion"]');
+    const casteEl = document.querySelector('[name="caste"]');
+
+    // --- 2. Target Elements (The Partner Preferences) ---
+    const pMinAgeEl = document.querySelector('[name="partner_min_age"]');
+    const pMaxAgeEl = document.querySelector('[name="partner_max_age"]');
+    const pMinHeightEl = document.querySelector('[name="partner_min_height"]');
+    const pMaxHeightEl = document.querySelector('[name="partner_max_height"]');
+    const pMaritalStatusSelect = document.querySelector('[name="partner_marital_status[]"]'); 
+    const pReligionSelect = document.querySelector('[name="partner_religion[]"]');
+    const pCasteSelect = document.querySelector('[name="partner_caste[]"]');
+
+    function autoFillPreferences() {
+        const gender = genderEl ? genderEl.value.toLowerCase() : '';
+        const dob = dobEl ? dobEl.value : '';
+        
+        // ====== AGE PREFERENCE (Stored as Birth Years) ======
+        if (dob && gender && pMinAgeEl && pMaxAgeEl) {
+            const birthYear = new Date(dob).getFullYear();
+            
+            if (gender === 'male') {
+                pMinAgeEl.value = birthYear + 4; 
+                pMaxAgeEl.value = birthYear;     
+            } else if (gender === 'female') {
+                pMinAgeEl.value = birthYear;     
+                pMaxAgeEl.value = birthYear - 4; 
+            }
+        }
+
+        // ====== HEIGHT PREFERENCE ======
+        const hFeet = heightFeetEl ? parseInt(heightFeetEl.value) || 0 : 0;
+        const hInch = heightInchEl ? parseInt(heightInchEl.value) || 0 : 0;
+
+        if (hFeet > 0 && gender && pMinHeightEl && pMaxHeightEl) {
+            const totalInches = (hFeet * 12) + hInch;
+            let minTargetInches = 0;
+            let maxTargetInches = 0;
+
+            if (gender === 'male') {
+                minTargetInches = totalInches - 8;
+                maxTargetInches = totalInches - 2;
+            } else if (gender === 'female') {
+                minTargetInches = totalInches + 2;
+                maxTargetInches = totalInches + 8;
+            }
+
+            // Convert to CM (1 inch = 2.54 cm)
+            pMinHeightEl.value = Math.round(minTargetInches * 2.54);
+            pMaxHeightEl.value = Math.round(maxTargetInches * 2.54);
+        }
+
+        // ====== MARITAL STATUS PREFERENCE ======
+        if (maritalStatusEl && pMaritalStatusSelect) {
+            const mStatus = maritalStatusEl.value.toLowerCase();
+            
+            // Clear existing
+            Array.from(pMaritalStatusSelect.options).forEach(opt => opt.selected = false);
+
+            let targetStatuses = [];
+            if (mStatus === 'single') {
+                targetStatuses = ['single'];
+            } else if (['divorced', 'separated', 'widowed', 'awaiting divorce'].includes(mStatus)) {
+                targetStatuses = ['divorced', 'separated', 'widowed'];
+            }
+
+            Array.from(pMaritalStatusSelect.options).forEach(opt => {
+                if (targetStatuses.includes(opt.value.toLowerCase())) {
+                    opt.selected = true;
+                }
+            });
+        }
+
+        // ====== RELIGION & CASTE PREFERENCE ======
+        if (religionEl && pReligionSelect && religionEl.value) {
+            Array.from(pReligionSelect.options).forEach(opt => opt.selected = false);
+            Array.from(pReligionSelect.options).forEach(opt => {
+                if (opt.value === religionEl.value) opt.selected = true;
+            });
+        }
+
+        if (casteEl && pCasteSelect && casteEl.value) {
+            Array.from(pCasteSelect.options).forEach(opt => opt.selected = false);
+            Array.from(pCasteSelect.options).forEach(opt => {
+                if (opt.value === casteEl.value) opt.selected = true;
+            });
+        }
+    }
+
+    // --- 3. Attach Listeners ---
+    const sourceElements = [genderEl, dobEl, heightFeetEl, heightInchEl, maritalStatusEl, religionEl, casteEl];
+    
+    sourceElements.forEach(el => {
+        if (el) {
+            el.addEventListener('change', autoFillPreferences);
+        }
+    });
+});
+</script>
+@endpush

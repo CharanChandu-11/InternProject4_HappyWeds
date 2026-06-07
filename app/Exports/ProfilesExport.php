@@ -446,7 +446,7 @@ class ProfilesExport implements FromCollection, WithHeadings, WithMapping
             $row->horoscope_visibility,
 
             // REGISTRATION
-            $row->registered_by,
+            $row->refer_by ? $row->refer_by->name : null,
             $dateTimeFormat($row->registration_date),
             $boolToYesNo($row->payment_status),
             $row->membership_type,

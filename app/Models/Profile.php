@@ -842,4 +842,9 @@ return $this->profile_completion;
             }
         });
     }
+
+    public function refer_by()
+    {
+        return $this->belongsTo(ReferBy::class, 'registered_by');
+    }
 }

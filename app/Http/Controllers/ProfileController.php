@@ -60,12 +60,15 @@ class ProfileController extends Controller
         if ($request->max_income) {
             $query->where('annual_income', '<=', $request->max_income);
         }
-
-        if ($request->referenced_by) {
+if ($request->referenced_by) {
             $query->where('registered_by', $request->referenced_by);
         }
 
-        $profiles = $query->latest()->paginate(100)->appends($request->query());
+        // 1. CHANGE: Reduce pagination from 100 to 15 to stop the server from crashing.
+        // 2. OPTIONAL CHANGE: If your view displays linked data (like the User who created it), 
+        // add ->with(['user']) before latest() to prevent the N+1 query problem.
+        $profiles = $query->latest()->paginate(15)->appends($request->query());
+        
         $references = ReferBy::all();
 
         return view('profiles.index', compact('profiles', 'references'));
