@@ -11,6 +11,12 @@ class ProfileImportExportController extends Controller
 {
     public function export()
     {
+        $user = auth()->user();
+        
+        // Block anyone who isn't an admin or developer
+        if (!$user->hasAnyRole(['admin', 'developer']) && !in_array($user->role, ['admin', 'developer'])) {
+            abort(403, 'Unauthorized action. Only Admins and Developers can download data.');
+        }
         return Excel::download(new ProfilesExport, 'profiles.xlsx');
     }
 

@@ -670,9 +670,18 @@
                             <p class="text-muted fw-medium mb-4" style="font-size: 0.95rem;">Download all existing profiles into an Excel spreadsheet for offline backup or deep analysis.</p>
                         </div>
 
-                        <a href="{{ route('admin.export') }}" class="btn-premium btn-premium-outline w-100 text-center text-decoration-none mt-auto d-flex justify-content-center align-items-center">
-                            <i class="bi bi-file-earmark-excel-fill fs-5 me-2 text-success"></i> Download Report
-                        </a>
+                        {{-- Check if user is Admin or Developer (using Spatie OR database string column) --}}
+                        @if(auth()->user()->hasAnyRole(['admin', 'developer']) || in_array(auth()->user()->role, ['admin', 'developer']))
+                            <a href="{{ route('admin.export') }}" class="btn-premium btn-premium-outline w-100 text-center text-decoration-none mt-auto d-flex justify-content-center align-items-center">
+                                <i class="bi bi-file-earmark-excel-fill fs-5 me-2 text-success"></i> Download Report
+                            </a>
+                        @else
+                            {{-- Locked State for Operators --}}
+                            <button type="button" disabled class="btn-premium btn-premium-outline w-100 text-center mt-auto d-flex justify-content-center align-items-center" style="background: #f8fafc; color: #94a3b8; border-color: #e2e8f0; cursor: not-allowed;" title="Only Admins and Developers can download data.">
+                                <i class="bi bi-lock-fill fs-5 me-2"></i> Access Restricted
+                            </button>
+                        @endif
+
                     </div>
                 </div>
             </div>
@@ -1210,7 +1219,7 @@
             btnTable.classList.remove('btn-dark', 'active');
         }
     }
-    
+
     function showProfileDetails(profileId, listItemElement, mode = 'view') {
         
         // 1. Trigger layout shift by removing full-width class
